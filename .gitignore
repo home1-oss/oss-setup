@@ -1,0 +1,11 @@
+
+.DS_Store
+*.iml
+
+# Vagrant
+.vagrant
+
+# download tmp files
+jdk-*-linux-x64.tar.gz
+jce_policy-*.zip
+*.aria2
