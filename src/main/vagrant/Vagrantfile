@@ -5,11 +5,11 @@ require 'fileutils'
 
 Vagrant.require_version ">= 1.9.0"
 
-SYSCTL_CONF_PATH = File.join(File.dirname(__FILE__), "src/vagrant/sysctl.conf")
-ORACLE_JDK8_PATH = File.join(File.dirname(__FILE__), "src/vagrant/jdk-8u121-linux-x64.tar.gz")
-JCE_POLICY8_PATH = File.join(File.dirname(__FILE__), "src/vagrant/jce_policy-8.zip")
+SYSCTL_CONF_PATH = File.join(File.dirname(__FILE__), "assets/sysctl.conf")
+ORACLE_JDK8_PATH = File.join(File.dirname(__FILE__), "assets/jdk-8u121-linux-x64.tar.gz")
+JCE_POLICY8_PATH = File.join(File.dirname(__FILE__), "assets/jce_policy-8.zip")
 APP_PACKAGE_PATH = File.join(File.dirname(__FILE__), "target/demo-quasar-0.0.1.KUANGHENG-SNAPSHOT-distribution.tar.gz")
-INIT_SCRIPT_PATH = File.join(File.dirname(__FILE__), "src/vagrant/init-script.sh")
+INIT_SCRIPT_PATH = File.join(File.dirname(__FILE__), "assets/init-script.sh")
 CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
 # Defaults for config options defined in CONFIG
@@ -42,7 +42,7 @@ end
 system("
     if [ #{ARGV[0]} = 'up' ]; then
         echo 'vagrant up and execute script'
-        ./src/vagrant/download_oracle_jdk.sh
+        ./assets/download_oracle_jdk.sh
 
         (cd .. && mvn -Dmaven.test.skip=true clean install)
         mvn -Dmaven.test.skip=true clean package assembly:single

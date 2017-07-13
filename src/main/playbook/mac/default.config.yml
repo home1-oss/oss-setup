@@ -1,0 +1,82 @@
+---
+downloads: ~/.oss/ansible-downloads/
+
+configure_sudoers: yes
+
+homebrew_installed_packages:
+# - ansible # Installed via Pip?
+- ant
+- aria2
+- asciidoc
+- autoconf
+- automake
+- bash
+- bash-completion
+- cmake
+- coreutils
+- doxygen
+- findutils
+- gcc@4.8
+#- gflags@2.2.0
+- git
+- gnu-sed
+- gnu-tar
+- gnupg
+- gnupg2
+- go
+- gpg
+- gradle
+- graphviz
+- grep
+- httpie
+- jq
+- iperf
+#- libsodium@1.0.12
+#- lz4@1.7.5
+- node@6
+- nvm
+#- rocksdb_f201a44
+#- snappy@1.1.4
+#- sqlite@3.18.0
+- ssh-copy-id
+- readline
+#- openssl@1.1.0.e
+- wget
+
+homebrew_taps:
+- homebrew/core
+- caskroom/cask
+- chshawkn/homebrew-brew-tap
+
+homebrew_cask_appdir: /Applications
+
+homebrew_cask_apps:
+#- android-ndk14b
+#- android-sdk25
+#- docker
+- xquartz
+- vagrant
+- virtualbox
+
+# Install packages from other package managers.
+# Note: You are responsible for making sure the required package managers are
+# installed, eg. through homebrew.
+composer_packages: []
+# - name: drush
+#   state: present # present/absent, default: present
+#   version: "^8.1" # default: N/A
+gem_packages: []
+# - name: bundler
+#   state: present # present/absent/latest, default: present
+#   version: "~> 1.15.1" # default: N/A
+npm_packages: []
+# - name: webpack
+#   state: present # present/absent/latest, default: present
+#   version: "^2.6" # default: N/A
+pip_packages: []
+# - name: mkdocs
+#   state: present # present/absent/latest, default: present
+#   version: "0.16.3" # default: N/A
+
+# Glob pattern to ansible task files to run after all other tasks are finished.
+post_provision_tasks: []
