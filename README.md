@@ -38,7 +38,11 @@ git clone https://github.com/home1-oss/oss-setup.git
 ```sh
 cd oss-setup/src/main/playbook/mac
 ansible-galaxy install -r requirements.yml
-ansible-playbook main.yml -i inventory -K
+ansible-playbook -v main.yml -i inventory -K
 ```
 
 > Note: If some Homebrew commands fail, you might need to agree to Xcode's license or fix some other Brew issue. Run `brew doctor` to see if this is the case.
+
+
+see:
+https://blog.vandenbrand.org/2016/01/04/how-to-automate-your-mac-os-x-setup-with-ansible/

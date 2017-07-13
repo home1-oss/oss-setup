@@ -10,4 +10,5 @@ jdk-*-linux-x64.tar.gz
 jce_policy-*.zip
 *.aria2
 
+*.retry
 src/main/playbook/**/roles

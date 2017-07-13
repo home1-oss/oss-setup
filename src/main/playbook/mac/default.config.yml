@@ -7,7 +7,6 @@ configure_osx: yes
 
 homebrew_installed_packages:
 #- ansible # Installed via Pip
-#- ant # Java 1.8+ is required
 - aria2
 - asciidoc
 - autoconf
@@ -19,7 +18,6 @@ homebrew_installed_packages:
 - doxygen
 - findutils
 - gcc@4.8
-#- gflags@2.2.0
 - git
 - gnu-sed
 - gnu-tar
@@ -27,22 +25,15 @@ homebrew_installed_packages:
 - gnupg2
 - go
 - gpg
-#- gradle # Java 1.7+ is required
 - graphviz
 - grep
 - httpie
 - jq
 - iperf
-#- libsodium@1.0.12
-#- lz4@1.7.5
 - node@6
 - nvm
-#- rocksdb_f201a44
-#- snappy@1.1.4
-#- sqlite@3.18.0
 - ssh-copy-id
 - readline
-#- openssl@1.1.0.e
 - wget
 
 homebrew_taps:
@@ -53,10 +44,10 @@ homebrew_taps:
 homebrew_cask_appdir: /Applications
 
 homebrew_cask_apps:
-#- android-ndk14b
-#- android-sdk25
+- alfred
 - docker
-- github
+- github-desktop
+- iterm2
 - java
 - sourcetree
 - xquartz
@@ -74,10 +65,25 @@ gem_packages: []
 # - name: bundler
 #   state: present # present/absent/latest, default: present
 #   version: "~> 1.15.1" # default: N/A
+- name: travis
+  state: present
+  version: "~1.8.8"
 npm_packages: []
 # - name: webpack
 #   state: present # present/absent/latest, default: present
 #   version: "^2.6" # default: N/A
+- name: gitbook-cli
+  state: present
+  version: "^2.3.0"
+  global: true
+- name: react-native-cli
+  state: present
+  version: "^2.0.1"
+  global: true
+- name: create-react-native-app
+  state: present
+  version: "^0.0.6"
+  global: true
 pip_packages: []
 # - name: mkdocs
 #   state: present # present/absent/latest, default: present
