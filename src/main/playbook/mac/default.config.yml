@@ -1,9 +1,21 @@
 ---
 downloads: ~/.oss/ansible-downloads/
 
+configure_dotfiles: yes
 configure_sudoers: yes
 configure_terminal: yes
 configure_osx: yes
+
+dotfiles_repo: https://github.com/home1-oss/dotfiles.git
+dotfiles_repo_accept_hostkey: yes
+dotfiles_repo_local_destination: ~/Dropbox/Development/GitHub/dotfiles
+dotfiles_files:
+  - .bashrc
+  - .bash_profile
+  - .gitignore
+  - .inputrc
+  - .osx
+  - .vimrc
 
 homebrew_installed_packages:
 #- ansible # Installed via Pip

@@ -5,6 +5,9 @@
   roles:
   - role: geerlingguy.homebrew
     tags: ['homebrew']
+  - role: geerlingguy.dotfiles
+    when: configure_dotfiles
+    tags: ['dotfiles']
 
   vars:
     homebrew_installed_packages:
