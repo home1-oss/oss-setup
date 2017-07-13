@@ -50,7 +50,7 @@
     shell: . /usr/local/opt/nvm/nvm.sh && nvm install 6.11.0 || nvm use --delete-prefix v6.11.0 --silent
 
   - name: fix https://github.com/ansible/ansible-modules-extras/issues/2128
-    shell: ln -s /usr/local/opt/nvm/versions/node/v6.11.0/bin/npm /usr/local/bin/npm; ln -s /usr/local/opt/nvm/versions/node/v6.11.0/bin/node /usr/local/bin/node
+    shell: ln -fs /usr/local/opt/nvm/versions/node/v6.11.0/bin/npm /usr/local/bin/npm; ln -fs /usr/local/opt/nvm/versions/node/v6.11.0/bin/node /usr/local/bin/node
 
   - include: tasks/extra-packages.yml
     tags: ['extra-packages']
