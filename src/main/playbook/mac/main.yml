@@ -47,7 +47,7 @@
   - name: install nodejs
     # nvm is not compatible with the npm config "prefix" option
     # `npm config delete prefix` or `nvm use --delete-prefix v6.11.0`
-    shell: . /usr/local/opt/nvm/nvm.sh && nvm install 6.11.0 && nvm use --delete-prefix v6.11.0 --silent
+    shell: . /usr/local/opt/nvm/nvm.sh && nvm install 6.11.0 || nvm use --delete-prefix v6.11.0 --silent
 
   - include: tasks/extra-packages.yml
     tags: ['extra-packages']
