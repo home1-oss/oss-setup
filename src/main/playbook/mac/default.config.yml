@@ -6,8 +6,8 @@ configure_terminal: yes
 configure_osx: yes
 
 homebrew_installed_packages:
-# - ansible # Installed via Pip?
-- ant
+#- ansible # Installed via Pip
+#- ant # Java 1.8+ is required
 - aria2
 - asciidoc
 - autoconf
@@ -56,6 +56,7 @@ homebrew_cask_apps:
 #- android-ndk14b
 #- android-sdk25
 #- docker
+- java
 - xquartz
 - vagrant
 - virtualbox

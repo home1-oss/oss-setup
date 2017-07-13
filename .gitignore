@@ -9,3 +9,5 @@
 jdk-*-linux-x64.tar.gz
 jce_policy-*.zip
 *.aria2
+
+src/main/playbook/**/roles
