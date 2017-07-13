@@ -2,6 +2,8 @@
 downloads: ~/.oss/ansible-downloads/
 
 configure_sudoers: yes
+configure_terminal: yes
+configure_osx: yes
 
 homebrew_installed_packages:
 # - ansible # Installed via Pip?
