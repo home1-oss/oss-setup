@@ -61,17 +61,19 @@ composer_packages: []
 # - name: drush
 #   state: present # present/absent, default: present
 #   version: "^8.1" # default: N/A
-gem_packages: []
+#gem_packages: []
 # - name: bundler
 #   state: present # present/absent/latest, default: present
 #   version: "~> 1.15.1" # default: N/A
+gem_packages:
 - name: travis
   state: present
   version: "~1.8.8"
-npm_packages: []
+#npm_packages: []
 # - name: webpack
 #   state: present # present/absent/latest, default: present
 #   version: "^2.6" # default: N/A
+npm_packages:
 - name: gitbook-cli
   state: present
   version: "^2.3.0"
