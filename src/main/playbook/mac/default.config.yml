@@ -92,17 +92,15 @@ npm_packages:
   state: present
   version: "^2.3.0"
   global: true
-  executable: /usr/local/opt/nvm/versions/node/v6.11.0/bin/npm
+  #executable: /usr/local/opt/nvm/versions/node/v6.11.0/bin/npm
 - name: react-native-cli
   state: present
   version: "^2.0.1"
   global: true
-  executable: /usr/local/opt/nvm/versions/node/v6.11.0/bin/npm
 - name: create-react-native-app
   state: present
   version: "^0.0.6"
   global: true
-  executable: /usr/local/opt/nvm/versions/node/v6.11.0/bin/npm
 pip_packages: []
 # - name: mkdocs
 #   state: present # present/absent/latest, default: present
