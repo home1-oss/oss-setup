@@ -42,7 +42,7 @@ homebrew_installed_packages:
 - httpie
 - jq
 - iperf
-- node@6
+#- node@6
 - nvm
 - ssh-copy-id
 - readline

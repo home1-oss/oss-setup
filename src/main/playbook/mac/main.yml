@@ -45,7 +45,7 @@
     tags: ['osx']
 
   - name: install nodejs
-    command: . '/usr/local/opt/nvm/nvm.sh' && nvm install 6.11.0
+    shell: . /usr/local/opt/nvm/nvm.sh && nvm install 6.11.0
 
   - include: tasks/extra-packages.yml
     tags: ['extra-packages']
