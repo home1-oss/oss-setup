@@ -56,7 +56,9 @@ homebrew_cask_apps:
 #- android-ndk14b
 #- android-sdk25
 - docker
+- github
 - java
+- sourcetree
 - xquartz
 - vagrant
 - virtualbox
