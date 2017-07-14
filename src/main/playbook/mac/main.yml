@@ -9,25 +9,6 @@
     when: configure_dotfiles
     tags: ['dotfiles']
 
-  vars:
-    homebrew_installed_packages:
-    - ant # Java 1.8+ is required
-    - gflags@2.2.0
-    - groovy
-    - gradle # Java 1.7+ is required
-    - libsodium@1.0.12
-    - lz4@1.7.5
-    - openssl@1.1.0.e
-    - rocksdb_f201a44
-    - scala
-    - sbt
-    - snappy@1.1.4
-    - sqlite@3.18.0
-
-    homebrew_cask_apps:
-    - android-ndk14b
-    - android-sdk25
-
   vars_files:
   - default.config.yml
 

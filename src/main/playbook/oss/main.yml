@@ -1,0 +1,37 @@
+---
+- connection: local
+  hosts: all
+
+  roles:
+  - role: geerlingguy.homebrew
+    tags: ['homebrew']
+
+  vars:
+    homebrew_taps:
+    - homebrew/core
+    - caskroom/cask
+    - chshawkn/homebrew-brew-tap
+
+    homebrew_cask_appdir: /Applications
+
+    homebrew_cask_apps:
+    - android-ndk14b
+    - android-sdk25
+    #- docker
+    - java
+    - vagrant
+    - virtualbox
+
+    homebrew_installed_packages:
+    - ant # Java 1.8+ is required
+    #- gflags@2.2.0
+    - groovy
+    - gradle # Java 1.7+ is required
+    #- libsodium@1.0.12
+    #- lz4@1.7.5
+    #- openssl@1.1.0.e
+    #- rocksdb_f201a44
+    - scala
+    - sbt
+    #- snappy@1.1.4
+    #- sqlite@3.18.0

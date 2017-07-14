@@ -1,0 +1,112 @@
+---
+- name: Fail if OS distro is not Ubuntu 14.04
+  fail:
+      msg="The role is designed only for Ubuntu 14.04"
+  when: "{{ ansible_distribution_version | version_compare('14.04', '!=') }}"
+
+# The Docker module in Ansible requires docker-py library to be installed on the remote server,
+# so at first we use python-pip to install docker-py library on all servers before installing the Docker:
+
+# see: https://github.com/ansible/ansible-modules-core/issues/2951
+
+- name: Clean apt cache
+  shell: rm -vf /var/lib/apt/lists/*; apt-get clean
+  sudo: yes
+
+- name: Update apt cache using apt module
+  apt: update_cache=yes cache_valid_time=3600
+  delay: 1
+  ignore_errors: yes
+  register: apt_result
+  retries: 3
+  sudo: yes
+  until: apt_result|success
+
+- name: Clean apt cache when apt module failed
+  shell: rm -vf /var/lib/apt/lists/*; apt-get clean
+  sudo: yes
+  when: apt_result|failed
+
+- name: Retry if needed using command apt-get update
+  command: apt-get update
+  ignore_errors: yes
+  sudo: yes
+  when: apt_result|failed
+
+- name: Install dependencies
+  apt:
+      name={{ item }}
+      #update_cache=yes
+  with_items:
+      - python-dev
+      - python-setuptools
+
+- name: Install pip
+  easy_install:
+      name=pip
+
+- name: Install docker-py
+  pip:
+      name=docker-py
+      state=present
+      version=1.10.6
+
+# Import the Docker apt repo and install Docker:
+- name: Add docker apt repo
+  apt_repository:
+      repo='deb https://apt.dockerproject.org/repo ubuntu-{{ ansible_distribution_release }} main'
+      state=present
+
+- name: Import the Docker repository key
+  apt_key:
+      url=https://apt.dockerproject.org/gpg
+      state=present
+      id=2C52609D
+
+- name: Test docker-engine installed
+  shell: dpkg-query -W 'docker-engine' | grep 1.12.6-0~ubuntu-trusty
+  ignore_errors: yes
+  register: is_docker_engine
+
+- name: Clean apt cache for docker repository
+  shell: rm -vf /var/lib/apt/lists/*; apt-get clean
+  sudo: yes
+  when: is_docker_engine|failed
+
+- name: Update apt cache for docker repository
+  ignore_errors: yes
+  shell: apt-get update
+  sudo: yes
+  when: is_docker_engine|failed
+
+- name: Install Docker package
+  apt:
+      name=docker-engine=1.12.6-0~ubuntu-trusty
+      #update_cache=yes
+
+# Create a system group for Docker
+# and add any user defined in “docker_users” variable to this group,
+# and it will copy template for Docker configuration then restart Docker.
+- name: Create a docker group
+  group:
+      name=docker
+      state=present
+
+- name: Add user(s) to docker group
+  user:
+      name={{ item }}
+      group=docker
+      state=present
+  with_items: docker_users
+  when: docker_users is defined
+
+# Check for the variable “docker_opts” which is not defined by default,
+# and if it is defined will add the options defined in the variable to the file:
+- name: Configure Docker
+  template:
+      src=default_docker.j2
+      dest=/etc/default/docker
+      mode=0644
+      owner=root
+      group=root
+  notify: restart docker

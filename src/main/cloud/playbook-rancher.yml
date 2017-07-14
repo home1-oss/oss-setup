@@ -1,0 +1,21 @@
+---
+# play 1
+- name: Installing and configuring Docker
+  hosts: all
+  sudo: yes
+  roles:
+    - { role: docker, tags: ["docker"] }
+
+# play 2
+- name: Setting up Rancher Server
+  hosts: "rancherserver"
+  sudo: yes
+  roles:
+    - { role: rancher_server, tags: ["rancher_server"] }
+
+# play 3
+- name: Register Rancher Hosts
+  hosts: "hosts"
+  sudo: yes
+  roles:
+    - { role: rancher_reg, tags: ["rancher_reg"] }

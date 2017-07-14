@@ -1,0 +1,16 @@
+[Cloud]
+rancherserver ansible_ssh_port=22 ansible_ssh_host=172.22.101.2
+
+[hosts:children]
+rancherhost1
+rancherhost2
+rancherhost3
+
+[rancherhost1]
+rancherhost1 ansible_ssh_port=22 ansible_ssh_host=172.22.101.3
+
+[rancherhost2]
+rancherhost2 ansible_ssh_port=22 ansible_ssh_host=172.22.101.4
+
+[rancherhost3]
+rancherhost3 ansible_ssh_port=22 ansible_ssh_host=172.22.101.5
