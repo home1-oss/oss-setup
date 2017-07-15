@@ -47,10 +47,14 @@ function append_or_replace() {
     fi
 }
 
-echo "executing init-script.sh on $(hostname) by $(whoami) at $(pwd)"
+echo "executing init.sh on $(hostname) by $(whoami) at $(pwd)"
 
-if ! type -p ifconfig > /dev/null; then sudo yum -y install net-tools; fi
-if ! type -p unzip > /dev/null; then sudo yum -y install unzip; fi
+sed -i 's#http://archive.ubuntu.com/ubuntu#http://mirrors.163.com/ubuntu#g' /etc/apt/sources.list
+sed -i 's#http://security.ubuntu.com/ubuntu#http://mirrors.163.com/ubuntu#g' /etc/apt/sources.list
+sudo rm -vrf /var/lib/apt/lists/*; sudo apt-get clean; sudo apt-get update; sudo apt-get update;
+
+#if ! type -p ifconfig > /dev/null; then sudo yum -y install net-tools; fi
+#if ! type -p unzip > /dev/null; then sudo yum -y install unzip; fi
 
 # see: http://stackoverflow.com/questions/17483723/command-not-found-when-using-sudo-ulimit
 vagrant_limit_lead='^### VAGRANT LIMIT BEGIN$'

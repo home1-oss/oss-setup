@@ -46,4 +46,3 @@ ansible-playbook -v main.yml -i inventory -K
 
 see:
 https://blog.vandenbrand.org/2016/01/04/how-to-automate-your-mac-os-x-setup-with-ansible/
-http://rancher.com/using-ansible-with-docker-to-deploy-a-wordpress-service-on-rancher/
