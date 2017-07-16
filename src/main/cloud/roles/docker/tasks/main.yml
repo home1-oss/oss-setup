@@ -44,9 +44,11 @@
 
 - name: Install docker-py
   pip:
-      name=docker-py
       state=present
-      version=1.10.6
+      name=docker
+      version=2.4.2
+      #name=docker-py
+      #version=1.10.6
 
 # Import the Docker apt repo and install Docker:
 - name: Add docker apt repo
@@ -81,21 +83,21 @@
       name=docker-engine=1.12.6-0~ubuntu-trusty
       #update_cache=yes
 
-#- name: Download docker-machine
-#  get_url:
-#    checksum: sha256:C4568BB0B0F5A48B57D9D034A441F445004C81B69C2F571AEFCA46862400EAAF
-#    url: https://github.com/docker/machine/releases/download/v0.12.0/docker-machine-Linux-x86_64
-#    dest: /usr/local/bin/docker-machine
-#    mode: 0755
-#    timeout: 30
-#
-#- name: Download docker-compose
-#  get_url:
-#    checksum: sha256:0D8AF4D3336B0B41361C06FF213BE5C42E2247BEB746DBC597803E862AF127E8
-#    url: https://github.com//docker/compose/releases/download/1.13.0/docker-compose-Linux-x86_64
-#    dest: /usr/local/bin/docker-compose
-#    mode: 0755
-#    timeout: 30
+- name: Download docker-machine
+  get_url:
+    checksum: sha256:C4568BB0B0F5A48B57D9D034A441F445004C81B69C2F571AEFCA46862400EAAF
+    url: https://github.com/docker/machine/releases/download/v0.12.0/docker-machine-Linux-x86_64
+    dest: /usr/local/bin/docker-machine
+    mode: 0755
+    timeout: 30
+
+- name: Download docker-compose
+  get_url:
+    checksum: sha256:0D8AF4D3336B0B41361C06FF213BE5C42E2247BEB746DBC597803E862AF127E8
+    url: https://github.com//docker/compose/releases/download/1.13.0/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: 0755
+    timeout: 30
 
 # Create a system group for Docker
 # and add any user defined in “docker_users” variable to this group,
