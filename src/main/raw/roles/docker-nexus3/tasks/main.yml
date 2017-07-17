@@ -50,7 +50,7 @@
           - BACKEND_PORT=${BACKEND_PORT:-5001}
           - BASIC_AUTH_PASS=${BASIC_AUTH_PASS:-deployment}
           - BASIC_AUTH_USER=${BASIC_AUTH_USER:-deployment}
-          - SERVER_NAME=${SERVER_NAME:-mirror.docker.internal}
+          - SERVER_NAME=${SERVER_NAME:-172.22.101.10} #registry.docker.internal
       networks:
         default:
           external:
@@ -75,7 +75,7 @@
           - BACKEND_PORT=${BACKEND_PORT:-5000}
           - BASIC_AUTH_PASS=${BASIC_AUTH_PASS:-deployment}
           - BASIC_AUTH_USER=${BASIC_AUTH_USER:-deployment}
-          - SERVER_NAME=${SERVER_NAME:-registry.docker.internal}
+          - SERVER_NAME=${SERVER_NAME:-172.22.101.10} #registry.docker.internal
       networks:
         default:
           external:
