@@ -1,5 +1,4 @@
 ---
 rancher_port: "80"
 
-docker_mirror_proxy: ""
-docker_opts: ["--registry-mirror=http://172.22.101.2:25000", "--insecure-registry 172.22.101.2:25000"]
+docker_opts: ["--registry-mirror=http://172.22.101.10:25001", "--insecure-registry 172.22.101.10:25000"]

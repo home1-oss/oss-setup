@@ -1,0 +1,82 @@
+---
+- name: nexus3.internal
+  docker_service:
+    project_name: docker-nexus3
+    definition:
+      version: '2.1'
+      services:
+        nexus3:
+          image: home1oss/nexus3:3.4.0
+          restart: always
+          command: ["bin/nexus", "run"]
+          container_name: ${NEXUS3_HOSTNAME:-nexus3.internal}
+          hostname: ${NEXUS3_HOSTNAME:-nexus3.internal}
+          ports:
+          - ${NEXUS3_PORT:-28081}:${NEXUS3_PORT:-28081}
+          - "5000:5000/tcp"
+          - "5001:5001/tcp"
+          volumes:
+          - volume-nexus3-nexus-data:/nexus-data
+          environment:
+          - DOCKER_MIRROR_GCR=http://gcr.io.internal:5000
+          - NEXUS_CONTEXT=${NEXUS3_CONTEXT:-nexus}
+          - NEXUS3_CONTEXT=${NEXUS3_CONTEXT:-nexus}
+          - NEXUS3_DEPLOYMENT_PASSWORD=${NEXUS3_DEPLOYMENT_PASSWORD:-deployment}
+          - NEXUS3_HOSTNAME=${NEXUS3_HOSTNAME:-nexus3.internal}
+          - NEXUS3_PORT=${NEXUS3_PORT:-28081}
+      networks:
+        default:
+          external:
+            name: oss-network
+      volumes:
+        volume-nexus3-nexus-data: {}
+
+- name: mirror.docker.internal
+  docker_service:
+    project_name: docker-proxy
+    definition:
+      version: '2.1'
+      services:
+        docker-mirror:
+          image: home1oss/proxy:1.10.2-alpine
+          restart: always
+          command: ["nginx", "-g", "daemon off;"]
+          container_name: ${SERVER_NAME:-mirror.docker.internal}
+          hostname: ${SERVER_NAME:-mirror.docker.internal}
+          ports:
+          - "25001:80/tcp"
+          environment:
+          - BACKEND_HOST=${BACKEND_HOST:-nexus3.internal}
+          - BACKEND_PORT=${BACKEND_PORT:-5001}
+          - BASIC_AUTH_PASS=${BASIC_AUTH_PASS:-deployment}
+          - BASIC_AUTH_USER=${BASIC_AUTH_USER:-deployment}
+          - SERVER_NAME=${SERVER_NAME:-mirror.docker.internal}
+      networks:
+        default:
+          external:
+            name: oss-network
+
+- name: registry.docker.internal
+  docker_service:
+    project_name: docker-proxy
+    definition:
+      version: '2.1'
+      services:
+        docker-registry:
+          image: home1oss/proxy:1.10.2-alpine
+          restart: always
+          command: ["nginx", "-g", "daemon off;"]
+          container_name: ${SERVER_NAME:-registry.docker.internal}
+          hostname: ${SERVER_NAME:-registry.docker.internal}
+          ports:
+          - "25000:80/tcp"
+          environment:
+          - BACKEND_HOST=${BACKEND_HOST:-nexus3.internal}
+          - BACKEND_PORT=${BACKEND_PORT:-5000}
+          - BASIC_AUTH_PASS=${BASIC_AUTH_PASS:-deployment}
+          - BASIC_AUTH_USER=${BASIC_AUTH_USER:-deployment}
+          - SERVER_NAME=${SERVER_NAME:-registry.docker.internal}
+      networks:
+        default:
+          external:
+            name: oss-network

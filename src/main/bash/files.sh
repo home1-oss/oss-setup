@@ -5,26 +5,30 @@ OSS_CDNS_DICT["cdn-zhl"]="http://o9wbz99tz.bkt.clouddn.com"
 OSS_CDNS_DICT["cdn-zzc"]="http://oe94ialfu.bkt.clouddn.com"
 
 declare -A OSS_FILES_DICT
-OSS_FILES_DICT["rancheros-v0.7.1.iso"]="https://github.com/rancher/os/releases/download/v0.7.1/rancheros.iso"
-OSS_FILES_DICT["rancheros-v0.8.0-rc9.iso"]="https://github.com/rancher/os/releases/download/v0.8.0-rc9/rancheros.iso"
+#OSS_FILES_DICT["rancheros-v0.7.1.iso"]="https://github.com/rancher/os/releases/download/v0.7.1/rancheros.iso"
+#OSS_FILES_DICT["rancheros-v0.8.0-rc9.iso"]="https://github.com/rancher/os/releases/download/v0.8.0-rc9/rancheros.iso"
 OSS_FILES_DICT["maven-3.3.9-bin.tar.gz"]="https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz"
+OSS_FILES_DICT["maven-3.5.0-bin.tar.gz"]="https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.tar.gz"
 OSS_FILES_DICT["gradle-2.14.1-bin.zip"]="https://downloads.gradle.org/distributions/gradle-2.14.1-bin.zip"
 OSS_FILES_DICT["apache-ant-1.9.9-bin.zip"]="http://mirrors.tuna.tsinghua.edu.cn/apache//ant/binaries/apache-ant-1.9.9-bin.zip"
 OSS_FILES_DICT["gradle-3.3-bin.zip"]="https://downloads.gradle.org/distributions/gradle-3.3-bin.zip"
-OSS_FILES_DICT["docker-machine-Linux-x86_64-v0.8.2"]="https://github.com/docker/machine/releases/download/v0.8.2/docker-machine-Linux-x86_64"
-OSS_FILES_DICT["docker-machine-Linux-x86_64-v0.9.0"]="https://github.com/docker/machine/releases/download/v0.9.0/docker-machine-Linux-x86_64"
-OSS_FILES_DICT["docker-compose-Linux-x86_64-1.10.0"]="https://github.com/docker/compose/releases/download/1.10.0/docker-compose-Linux-x86_64"
+OSS_FILES_DICT["gradle-3.5-bin.zip"]="https://downloads.gradle.org/distributions/gradle-3.5-bin.zip"
+#OSS_FILES_DICT["docker-machine-Linux-x86_64-v0.8.2"]="https://github.com/docker/machine/releases/download/v0.8.2/docker-machine-Linux-x86_64"
+#OSS_FILES_DICT["docker-machine-Linux-x86_64-v0.9.0"]="https://github.com/docker/machine/releases/download/v0.9.0/docker-machine-Linux-x86_64"
+OSS_FILES_DICT["docker-machine-Linux-x86_64-v0.12.0"]="https://github.com/docker/machine/releases/download/v0.12.0/docker-machine-Linux-x86_64"
+OSS_FILES_DICT["docker-compose-Linux-x86_64-1.13.0"]="https://github.com/docker/compose/releases/download/1.13.0/docker-compose-Linux-x86_64"
 # https://circle-artifacts.com/gh/andyshinn/alpine-pkg-glibc/6/artifacts/0/home/ubuntu/alpine-pkg-glibc/packages/x86_64/glibc-2.21-r2.apk
 OSS_FILES_DICT["glibc-2.23-r3.apk"]="https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.23-r3/glibc-2.23-r3.apk"
 OSS_FILES_DICT["jdk-8u131-linux-x64.tar.gz"]="http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz"
 OSS_FILES_DICT["jce_policy-8.zip"]="http://download.oracle.com/otn-pub/java/jce/8/jce_policy-8.zip"
 # H "Cookie: oraclelicense=accept-securebackup-cookie"
 # -b "oraclelicense=accept-securebackup-cookie"
-OSS_FILES_DICT["node-v6.9.2-linux-x64.tar.xz"]="https://nodejs.org/dist/v6.9.2/node-v6.9.2-linux-x64.tar.xz"
+#OSS_FILES_DICT["node-v6.9.2-linux-x64.tar.xz"]="https://nodejs.org/dist/v6.9.2/node-v6.9.2-linux-x64.tar.xz"
+OSS_FILES_DICT["node-v6.11.0-linux-x64.tar.xz"]="https://nodejs.org/dist/v6.11.0/node-v6.11.0-linux-x64.tar.xz"
 # see: https://github.com/maxcnunes/waitforit
-OSS_FILES_DICT["waitforit-linux_amd64-v1.3.2"]="https://github.com/maxcnunes/waitforit/releases/download/v1.3.2/waitforit-linux_amd64"
+#OSS_FILES_DICT["waitforit-linux_amd64-v1.3.2"]="https://github.com/maxcnunes/waitforit/releases/download/v1.3.2/waitforit-linux_amd64"
 OSS_FILES_DICT["waitforit-linux_amd64-v1.4.0"]="https://github.com/maxcnunes/waitforit/releases/download/v1.4.0/waitforit-linux_amd64"
-OSS_FILES_DICT["docker-registry.crt"]="http://o9wbz99tz.bkt.clouddn.com/docker-registry.crt?v=fuck_cdn_cache_$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)"
+#OSS_FILES_DICT["docker-registry.crt"]="http://o9wbz99tz.bkt.clouddn.com/docker-registry.crt?v=fuck_cdn_cache_$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)"
 
 DOWNLOAD_CACHE="${HOME}/.oss/download-cache"
 mkdir -p ${DOWNLOAD_CACHE}
@@ -66,15 +70,15 @@ for filename in ${!OSS_FILES_DICT[@]}; do
     mkdir -p ${download_path}
     download_target="${download_path}/${original_file}"
 
-    if [ ! -f "${download_target}" ] || [ ! -f "${download_target}.sha1" ] || [ "$(cat ${download_target}.sha1)" != "$(sha1sum ${download_target} | awk '{print $1}')" ]; then
+    if [ ! -f "${download_target}" ] || [ ! -f "${download_target}.checksum" ] || [ "$(cat ${download_target}.checksum)" != "$(shasum ${download_target} | awk '{print $1}')" ]; then
         echo "download ${download_url} into ${download_target}"
         aria2c --header="Cookie: oraclelicense=accept-securebackup-cookie" \
             --file-allocation=none \
             -c -x 10 -s 10 -m 0 \
             --console-log-level=notice --log-level=notice --summary-interval=0 \
             -d "${download_path}" -o "${original_file}" "${download_url}"
-        sha1sum=$(sha1sum ${download_target} | awk '{print $1}')
-        echo "${sha1sum}" > ${download_target}.sha1
+        checksum=$(shasum ${download_target} | awk '{print $1}')
+        echo "${checksum}" > ${download_target}.checksum
     else
         echo "found cached at ${download_target}"
     fi
@@ -82,23 +86,23 @@ done
 
 
 if [ -z "${BUILD_FILESERVER}" ]; then
-    BUILD_FILESERVER="http://fileserver.local:80"
+    BUILD_FILESERVER="http://fileserver.internal:28081/nexus/repository/files"
 fi
-FOUND_FILES=($(find ${DOWNLOAD_CACHE} -type f | grep -Ev ".sha1$"))
+FOUND_FILES=($(find ${DOWNLOAD_CACHE} -type f | grep -Ev ".checksum$"))
 for found_file in "${FOUND_FILES[@]}"; do
-    if [ -f "${found_file}.sha1" ] && [ "$(cat ${found_file}.sha1)" == "$(sha1sum ${found_file} | awk '{print $1}')" ]; then
+    if [ -f "${found_file}.checksum" ] && [ "$(cat ${found_file}.checksum)" == "$(shasum ${found_file} | awk '{print $1}')" ]; then
         upload_path=$(echo ${found_file} | sed "s#${DOWNLOAD_CACHE}##" | sed 's#^/##')
         echo "found_file ${found_file}"
 
         upload_url="${BUILD_FILESERVER}/${upload_path}"
-        upload_url_status=$(curl --head --silent ${upload_url}.sha1 | head -n 1 | awk '{print $2}')
-        if [ "404" == "${upload_url_status}" ] || [ "$(cat ${found_file}.sha1)" != "$(curl --silent ${upload_url}.sha1)" ]; then
+        upload_url_status=$(curl --head --silent ${upload_url}.checksum | head -n 1 | awk '{print $2}')
+        if [ "404" == "${upload_url_status}" ] || [ "$(cat ${found_file}.checksum)" != "$(curl --silent ${upload_url}.checksum)" ]; then
             echo "${upload_url_status} upload_url ${upload_url}"
             # TODO 从文件读取用户名密码
             curl --silent --user "deployment:deployment" -T "${found_file}" "${upload_url}"
-            curl --silent --user "deployment:deployment" -T "${found_file}.sha1" "${upload_url}.sha1"
-            if [ "$(cat ${found_file}.sha1)" == "$(curl --silent ${upload_url}.sha1)" ]; then
-                echo "upload done $(curl --silent ${upload_url}.sha1)"
+            curl --silent --user "deployment:deployment" -T "${found_file}.checksum" "${upload_url}.checksum"
+            if [ "$(cat ${found_file}.checksum)" == "$(curl --silent ${upload_url}.checksum)" ]; then
+                echo "upload done $(curl --silent ${upload_url}.checksum)"
             fi
         else
             echo "${upload_url_status} skip upload_url ${upload_url}"

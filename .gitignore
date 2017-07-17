@@ -12,3 +12,4 @@ jce_policy-*.zip
 
 *.retry
 src/main/playbook/**/roles
+src/main/raw/roles/docker

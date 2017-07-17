@@ -1,0 +1,30 @@
+---
+- name: Installing and configuring Docker
+  hosts: all
+  sudo: yes
+  roles:
+    - { role: home1-oss.oss-docker-install, tags: ["docker"] }
+
+#- name: Installing and configuring Docker
+#  hosts: all
+#  sudo: yes
+#  roles:
+#    - { role: docker, tags: ["docker"] }
+
+- name: Docker mirror gcr.io
+  hosts: "repository"
+  sudo: yes
+  roles:
+    - { role: docker-mirror-gcr, tags: ["docker-mirror-gcr"] }
+
+- name: Nexus3
+  hosts: "repository"
+  sudo: yes
+  roles:
+    - { role: docker-nexus3, tags: ["docker-nexus3"] }
+
+- name: Gitlab
+  hosts: "repository"
+  sudo: yes
+  roles:
+    - { role: docker-gitlab, tags: ["docker-gitlab"] }

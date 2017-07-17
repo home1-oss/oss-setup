@@ -5,12 +5,6 @@
   roles:
     - { role: home1-oss.oss-docker-install, tags: ["docker"] }
 
-- name: Docker mirror
-  hosts: "rancherserver"
-  sudo: yes
-  roles:
-    - { role: docker_mirror, tags: ["docker_mirror"] }
-
 - name: Docker config
   hosts: all
   sudo: yes

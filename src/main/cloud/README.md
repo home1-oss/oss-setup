@@ -11,7 +11,7 @@ A home1-oss environment on vm and docker containers.
 
 vagrant up
 ansible-galaxy install -r requirements.yml
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook-rancher.yml -e "docker_mirror_proxy=socks5://127.0.0.1:1080"
+ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml
 ```
 
 ```sh
@@ -30,7 +30,7 @@ rancher env templates
 rancher env create -t k8s_vxlan env_k8s_vxlan_internal
 rancher env ls
 
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook-rancher.yml --tags "docker,docker_mirror,docker_config,rancher_reg" -e "rancher_project_name=env_k8s_vxlan_internal docker_mirror_proxy=socks5://127.0.0.1:1080"
+ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "docker,docker_mirror,docker_config,rancher_reg" -e "rancher_project_name=env_k8s_vxlan_internal"
 ```
 
 ```sh

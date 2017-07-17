@@ -6,13 +6,13 @@
 - name: Run the home1oss/pull-through-cache:2.6.1 container
   docker_container:
     env:
-      PROXY: "{{ docker_mirror_proxy }}"
+      PROXY: "{{ proxy }}"
       PULL_THROUGH_CACHE_OF: https://gcr.io
     hostname: "mirror-of-gcr.io.internal"
     image: home1oss/pull-through-cache:2.6.1
     name: "mirror-of-gcr.io.internal"
     ports:
-      - "25000:5000"
+      - "25004:5000"
     restart_policy: always
     volumes:
       - /var/lib/registry
