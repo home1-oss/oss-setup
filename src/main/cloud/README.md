@@ -10,8 +10,9 @@ A home1-oss environment on vm and docker containers.
 #rm -f ${HOME}/.vagrant.d/insecure_private_key
 
 vagrant up
+ansible-galaxy install -r requirements.yml
 ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook-rancher.yml -e "docker_mirror_proxy=socks5://127.0.0.1:1080"
-``` 
+```
 
 ```sh
 curl 'http://rancherserver.internal/v2-beta/apikey' \

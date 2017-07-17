@@ -3,7 +3,7 @@
   hosts: all
   sudo: yes
   roles:
-    - { role: docker, tags: ["docker"] }
+    - { role: home1-oss.oss-docker-install, tags: ["docker"] }
 
 - name: Docker mirror
   hosts: "rancherserver"

@@ -40,7 +40,7 @@ Vagrant.configure(2) do |config|
     rancherserver.vm.box= "ubuntu/trusty64"
     rancherserver.vm.box_url = "ubuntu/trusty64"
 
-    rancherserver.vm.network :private_network, ip: "172.22.101.2",
+    rancherserver.vm.network :private_network, ip: "172.22.101.100",
       nic_type: "82545EM"
 
     rancherserver.vm.provider :virtualbox do |v|
@@ -55,7 +55,7 @@ Vagrant.configure(2) do |config|
   (1..N).each do |machine_id|
     config.vm.define "rancherhost#{machine_id}" do |machine|
       machine.vm.hostname = "rancherhost#{machine_id}"
-      machine.vm.network "private_network", ip: "172.22.101.#{2+machine_id}",
+      machine.vm.network "private_network", ip: "172.22.101.#{100+machine_id}",
         nic_type: "82545EM"
 
       if machine_id == 1
