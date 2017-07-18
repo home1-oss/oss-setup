@@ -58,6 +58,7 @@ vagrant destroy -f && rm -rf .vagrant
 ## References
 
 see: http://rancher.com/using-ansible-with-docker-to-deploy-a-wordpress-service-on-rancher/
+see: https://github.com/galal-hussein/Rancher-Ansible
 
 ### Supported kernel and docker versions
 see: http://rancher.com/docs/rancher/v1.6/en/hosts/
