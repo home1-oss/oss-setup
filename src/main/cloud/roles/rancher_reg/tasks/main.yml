@@ -59,3 +59,5 @@
       state: started
       volumes: /var/run/docker.sock:/var/run/docker.sock
   when: "{{ 'rancher-agent-{{ ansible_hostname }}-{{ rancher_project_id }}' not in containers.stdout }}"
+
+- debug: msg="inventory_hostname {{ inventory_hostname }}, ansible_hostname {{ ansible_hostname }}"

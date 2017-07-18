@@ -5,6 +5,12 @@
   roles:
     - { role: home1-oss.oss-docker-install, tags: ["docker"] }
 
+#- name: Installing and configuring Docker
+#  hosts: all
+#  sudo: yes
+#  roles:
+#    - { role: docker, tags: ["docker"] }
+
 - name: Docker config
   hosts: all
   sudo: yes

@@ -8,11 +8,13 @@
     env:
       PROXY: "{{ proxy }}"
       PULL_THROUGH_CACHE_OF: https://gcr.io
-    hostname: "mirror-of-gcr.io.internal"
+    hostname: "gcr.io.internal"
     image: home1oss/pull-through-cache:2.6.1
-    name: "mirror-of-gcr.io.internal"
+    name: "gcr.io.internal"
     ports:
       - "25004:5000"
     restart_policy: always
+    networks:
+      - name: oss-network
     volumes:
       - /var/lib/registry
