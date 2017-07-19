@@ -51,7 +51,7 @@ Vagrant.configure(2) do |config|
     end
   end
 
-  N = 3
+  N = 2
   (1..N).each do |machine_id|
     config.vm.define "rancherhost#{machine_id}" do |machine|
       machine.vm.hostname = "rancherhost#{machine_id}"

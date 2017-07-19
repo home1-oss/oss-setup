@@ -23,6 +23,17 @@ ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_p
 
 ## Run k8s
 
+> When using kubelet, gcr.io is not available from china，
+> you can force k8s use a registry by option --pod-infra-container-image
+
+Cache images from gcr.io
+see: [Private Registry with Kubernetes in Rancher](http://rancher.com/docs/rancher/v1.6/en/kubernetes/private-registry/)
+```sh
+vagrant ssh-config rancherhost1 > /tmp/ssh-config-rancherhost1
+cat pull_gcr_images.sh | ssh -F /tmp/ssh-config-rancherhost1 root@rancherhost1
+```
+
+Create a rancher environment for k8s
 ```sh
 ansible-galaxy install -r requirements.yml
 ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "docker,docker_config,rancher_server"
@@ -45,7 +56,21 @@ rancher env templates
 
 rancher env create -t k8s_vxlan env_k8s_vxlan_internal
 rancher env ls
+```
 
+ADDING A PRIVATE REGISTRY TO KUBERNETES
+
+ADDING REGISTRIES
+1. Select Kubernetes environment (env_k8s_vxlan_internal)
+2. Under INFRASTRUCTURE -> Registries
+3. Add registry: 172.22.101.10:25001
+
+CHANGING THE DEFAULT REGISTRY
+1. Under Admin -> Setting -> Advanced Settings
+2. Find the registry.default setting and click on the edit icon.
+3. Add the registry value and click on Save.
+
+```
 ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "rancher_reg" -e "rancher_project_name=env_k8s_vxlan_internal"
 ```
 
