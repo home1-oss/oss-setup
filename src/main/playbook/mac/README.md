@@ -49,3 +49,7 @@ https://blog.vandenbrand.org/2016/01/04/how-to-automate-your-mac-os-x-setup-with
 
 see: https://github.com/geerlingguy/mac-dev-playbook
 see: https://github.com/geerlingguy/ansible-role-homebrew
+
+Java problem
+see: https://github.com/geerlingguy/ansible-role-homebrew/issues/74
+see: https://github.com/geerlingguy/ansible-role-homebrew/pull/58
