@@ -74,6 +74,12 @@ CHANGING THE DEFAULT REGISTRY
 ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "rancher_reg" -e "rancher_project_name=env_k8s_vxlan_internal"
 ```
 
+Enable access VXLAN (packet forward through VXLAN between hosts)
+
+```sh
+./enable_access_vxlan.sh
+```
+
 ## Destroy
 
 ```sh
