@@ -9,13 +9,19 @@
 #  hosts: all
 #  sudo: yes
 #  roles:
-#    - { role: docker, tags: ["docker"] }
+#    - { role: oss-docker-install, tags: ["docker"] }
 
 - name: Docker config
   hosts: all
   sudo: yes
   roles:
-    - { role: docker_config, tags: ["docker_config"] }
+    - { role: home1-oss.oss-docker-config, tags: ["docker-config"] }
+
+#- name: Docker config
+#  hosts: all
+#  sudo: yes
+#  roles:
+#    - { role: oss-docker-config, tags: ["docker-config"] }
 
 - name: Setting up Rancher Server
   hosts: "rancherserver"

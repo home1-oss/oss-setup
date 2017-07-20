@@ -36,7 +36,7 @@ cat pull_gcr_images.sh | ssh -F /tmp/ssh-config-rancherhost1 root@rancherhost1
 Create a rancher environment for k8s
 ```sh
 ansible-galaxy install -r requirements.yml
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "docker,docker_config,rancher_server"
+ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "docker,docker-config,rancher_server"
 
 curl 'http://rancherserver.internal/v2-beta/apikey' \
     -H 'content-type: application/json' \
