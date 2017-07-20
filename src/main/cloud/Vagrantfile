@@ -20,6 +20,7 @@ Vagrant.configure(2) do |config|
   config.ssh.private_key_path = ["#{ENV['HOME']}/.vagrant.d/insecure_private_key","#{ENV['HOME']}/.ssh/id_rsa"]
 
   config.vm.provision "shell", inline: <<-SCRIPT
+    mkdir -p /root/.ssh
     curl https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub > /root/.ssh/authorized_keys
     printf "%s\n" "#{File.read("#{ENV['HOME']}/.ssh/id_rsa.pub")}" >> /root/.ssh/authorized_keys
     chmod 600 /root/.ssh/authorized_keys
@@ -44,9 +45,9 @@ Vagrant.configure(2) do |config|
       nic_type: "82545EM"
 
     rancherserver.vm.provider :virtualbox do |v|
-      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
       v.customize ["modifyvm", :id, "--memory", 1024]
       v.customize ["modifyvm", :id, "--name", "rancherserver"]
+      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
       v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
     end
   end
@@ -59,27 +60,28 @@ Vagrant.configure(2) do |config|
         nic_type: "82545EM"
 
       if machine_id == 1
-        machine.vm.box= "ubuntu/trusty64"
-        machine.vm.box_url = "ubuntu/trusty64"
+        machine.vm.box= "ubuntu/xenial64"
+        machine.vm.box_url = "ubuntu/xenial64"
+        #machine.vm.box= "ubuntu/trusty64"
+        #machine.vm.box_url = "ubuntu/trusty64"
       end
       if machine_id == 2
-        #machine.vm.box= "ubuntu/xenial64"
-        #machine.vm.box_url = "ubuntu/xenial64"
-        machine.vm.box= "ubuntu/trusty64"
-        machine.vm.box_url = "ubuntu/trusty64"
+        machine.vm.box= "centos/7"
+        machine.vm.box_url = "centos/7"
+        #machine.vm.box= "ubuntu/trusty64"
+        #machine.vm.box_url = "ubuntu/trusty64"
       end
       if machine_id == 3
-        #machine.vm.box= "centos/7"
-        #machine.vm.box_url = "centos/7"
         machine.vm.box= "ubuntu/trusty64"
         machine.vm.box_url = "ubuntu/trusty64"
       end
 
       machine.vm.provider :virtualbox do |v|
+        #v.customize ["modifyvm", :id, "--memory", 2560]
+        v.customize ["modifyvm", :id, "--memory", 3840]
         v.customize ["modifyvm", :id, "--name", "rancherhost#{machine_id}"]
-        v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
         v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-        v.customize ["modifyvm", :id, "--memory", 2048]
+        v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
       end
 
       # Only execute once the Ansible provisioner,
@@ -99,13 +101,12 @@ Vagrant.configure(2) do |config|
   #  rancherhost1.vm.box= "ubuntu/trusty64"
   #  rancherhost1.vm.box_url = "ubuntu/trusty64"
   #
-  #  rancherhost1.vm.network :private_network, ip: "172.22.101.3",
-  #    nic_type: "82545EM"
+  #  rancherhost1.vm.network :private_network, ip: "172.22.101.3", nic_type: "82545EM"
   #
   #  rancherhost1.vm.provider :virtualbox do |v|
-  #    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   #    v.customize ["modifyvm", :id, "--memory", 2048]
   #    v.customize ["modifyvm", :id, "--name", "rancherhost1"]
+  #    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   #    v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
   #  end
   #end
@@ -115,13 +116,12 @@ Vagrant.configure(2) do |config|
   #  rancherhost2.vm.box= "ubuntu/xenial64"
   #  rancherhost2.vm.box_url = "ubuntu/xenial64"
   #
-  #  rancherhost2.vm.network :private_network, ip: "172.22.101.4",
-  #    nic_type: "82545EM"
+  #  rancherhost2.vm.network :private_network, ip: "172.22.101.4", nic_type: "82545EM"
   #
   #  rancherhost2.vm.provider :virtualbox do |v|
-  #    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   #    v.customize ["modifyvm", :id, "--memory", 2048]
   #    v.customize ["modifyvm", :id, "--name", "rancherhost2"]
+  #    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   #    v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
   #  end
   #end
@@ -131,13 +131,12 @@ Vagrant.configure(2) do |config|
   #  rancherhost3.vm.box= "centos/7"
   #  rancherhost3.vm.box_url = "centos/7"
   #
-  #  rancherhost3.vm.network :private_network, ip: "172.22.101.5",
-  #    nic_type: "82545EM"
+  #  rancherhost3.vm.network :private_network, ip: "172.22.101.5", nic_type: "82545EM"
   #
   #  rancherhost3.vm.provider :virtualbox do |v|
-  #    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   #    v.customize ["modifyvm", :id, "--memory", 2048]
   #    v.customize ["modifyvm", :id, "--name", "rancherhost3"]
+  #    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   #    v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
   #  end
   #end

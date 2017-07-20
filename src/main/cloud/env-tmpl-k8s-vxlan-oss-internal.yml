@@ -1,0 +1,35 @@
+description: Kubernetes VXLAN template for oss-internal
+name: env-tmpl-k8s-vxlan-oss-internal
+stacks:
+- name: healthcheck
+  template_id: library:infra*healthcheck
+- answers:
+    BACKUP_PERIOD: 15m0s
+    BACKUP_RETENTION: 24h
+    CLOUD_PROVIDER: rancher
+    CONSTRAINT_TYPE: none
+    EMBEDDED_BACKUPS: true
+    ENABLE_ADDONS: true
+    ENABLE_RANCHER_INGRESS_CONTROLLER: true
+    ETCD_ELECTION_TIMEOUT: "5000"
+    ETCD_HEARTBEAT_INTERVAL: "500"
+    INFLUXDB_HOST_PATH: ""
+    POD_INFRA_CONTAINER_IMAGE: gcr.io/google_containers/pause-amd64:3.0
+    RBAC: false
+    REGISTRY: ""
+  name: kubernetes
+  template_id: catalog-oss-internal:infra*k8s
+- name: network-services
+  template_id: library:infra*network-services
+- answers:
+    DOCKER_BRIDGE: docker0
+    HOST_PORTS: true
+    MTU: "1500"
+    RANCHER_DEBUG: false
+    RANCHER_HAIRPIN_MODE: false
+    RANCHER_PROMISCUOUS_MODE: true
+    SUBNET: 10.42.0.0/16
+  name: vxlan
+  template_id: catalog-oss-internal:infra*vxlan
+- name: scheduler
+  template_id: library:infra*scheduler

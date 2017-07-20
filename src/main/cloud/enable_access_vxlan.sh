@@ -1,5 +1,5 @@
 
-rancher_env=env_k8s_vxlan_internal
+rancher_env=env-k8s-vxlan-oss-internal
 
 #rancher --env ${rancher_env} ps -a -s -c
 #rancher --env ${rancher_env} stacks ls -s

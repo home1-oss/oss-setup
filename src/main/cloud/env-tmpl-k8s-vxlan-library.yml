@@ -1,5 +1,5 @@
 description: Kubernetes VXLAN template
-name: k8s_vxlan
+name: env-tmpl-k8s-vxlan-library
 stacks:
 - name: healthcheck
   template_id: library:infra*healthcheck

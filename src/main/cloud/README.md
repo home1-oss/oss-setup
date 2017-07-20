@@ -34,6 +34,13 @@ cat pull_gcr_images.sh | ssh -F /tmp/ssh-config-rancherhost1 root@rancherhost1
 ```
 
 Create a rancher environment for k8s
+
+1. Under Admin -> Setting -> Catalog
+2. Add catalog
+ Name: catalog-oss-internal
+ URL: https://github.com/home1-oss/rancher-catalog.git
+ Branch: v1.6-release-oss-internal
+
 ```sh
 ansible-galaxy install -r requirements.yml
 ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "docker,docker-config,rancher_server"
@@ -44,24 +51,27 @@ curl 'http://rancherserver.internal/v2-beta/apikey' \
     > ~/.oss/rancher-api-key.json
 
 export RANCHER_URL=http://rancherserver.internal:80
+#export RANCHER_URL=http://rancherserver.internal:80/v2-beta
 export RANCHER_ACCESS_KEY=$(cat ~/.oss/rancher-api-key.json | jq -r ".publicValue")
 export RANCHER_SECRET_KEY=$(cat ~/.oss/rancher-api-key.json | jq -r ".secretValue")
 
 curl -L https://github.com/rancher/cli/releases/download/v0.6.2/rancher-darwin-amd64-v0.6.2.tar.xz | tar --strip-components=2 -xJ -C /usr/local/bin
 # or
 curl --socks5-hostname <proxyhost:port -L https://github.com/rancher/cli/releases/download/v0.6.2/rancher-darwin-amd64-v0.6.2.tar.xz | tar --strip-components=2 -xJ -C /usr/local/bin
+```
 
-rancher env template import env_tmpl_k8s_vxlan.yml
+```sh
+rancher env template import env-tmpl-k8s-vxlan-oss-internal.yml
 rancher env templates
 
-rancher env create -t k8s_vxlan env_k8s_vxlan_internal
+rancher env create -t env-tmpl-k8s-vxlan-oss-internal env-k8s-vxlan-oss-internal
 rancher env ls
 ```
 
 ADDING A PRIVATE REGISTRY TO KUBERNETES
 
 ADDING REGISTRIES
-1. Select Kubernetes environment (env_k8s_vxlan_internal)
+1. Select Kubernetes environment (env-k8s-vxlan-oss-internal)
 2. Under INFRASTRUCTURE -> Registries
 3. Add registry: 172.22.101.10:25001
 
@@ -71,13 +81,24 @@ CHANGING THE DEFAULT REGISTRY
 3. Add the registry value and click on Save.
 
 ```
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "rancher_reg" -e "rancher_project_name=env_k8s_vxlan_internal"
+ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "rancher_reg" -e "rancher_project_name=env-k8s-vxlan-oss-internal"
 ```
 
 Enable access VXLAN (packet forward through VXLAN between hosts)
 
 ```sh
 ./enable_access_vxlan.sh
+```
+
+If dashboard not available
+KUBERNETES -> Infrastructure Stacks -> kubernetes
+1. Find container addon-starter
+2. Execute `addons-update.sh` on its cli
+
+Play
+```sh
+kubectl get nodes
+kubectl get pods --all-namespaces
 ```
 
 ## Destroy

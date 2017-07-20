@@ -3,10 +3,18 @@
 # to run each agent with the right registration url,
 # this token is needed to register hosts in Rancher environment:
 ---
-- name: Install httplib2
+- name: Install httplib2 by apt
   apt:
       name=python-httplib2
       #update_cache=yes
+  when: ansible_os_family == "Debian"
+
+- name: Install httplib2 by yum
+  yum:
+    name: python-httplib2
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Get rancher projects info
   action: uri
@@ -46,18 +54,18 @@
 
 - name: pull rancher/agent
   docker_image:
-      name: rancher/agent:v{{ rancher_agent_version }}
+    name: rancher/agent:v{{ rancher_agent_version }}
 
 - name: Register the Host machine with the Rancher server on {{ ansible_hostname }} ({{ ansible_ssh_host }})
   docker_container:
-      #auto_remove: True
-      command: "{{ rancher_token.json['registrationUrl'] }}"
-      detach: True
-      image: rancher/agent:v{{ rancher_agent_version }}
-      name: "rancher-agent-{{ ansible_hostname }}-{{ rancher_project_id }}"
-      privileged: yes
-      state: started
-      volumes: /var/run/docker.sock:/var/run/docker.sock
+    #auto_remove: True
+    command: "{{ rancher_token.json['registrationUrl'] }}"
+    detach: True
+    image: rancher/agent:v{{ rancher_agent_version }}
+    name: "rancher-agent-{{ ansible_hostname }}-{{ rancher_project_id }}"
+    privileged: yes
+    state: started
+    volumes: /var/run/docker.sock:/var/run/docker.sock
   when: "{{ 'rancher-agent-{{ ansible_hostname }}-{{ rancher_project_id }}' not in containers.stdout }}"
 
 - debug: msg="inventory_hostname {{ inventory_hostname }}, ansible_hostname {{ ansible_hostname }}"
