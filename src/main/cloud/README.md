@@ -33,14 +33,6 @@ vagrant ssh-config rancherhost1 > /tmp/ssh-config-rancherhost1
 cat pull_gcr_images.sh | ssh -F /tmp/ssh-config-rancherhost1 root@rancherhost1
 ```
 
-Create a rancher environment for k8s
-
-1. Under Admin -> Setting -> Catalog
-2. Add catalog
- Name: catalog-oss-internal
- URL: https://github.com/home1-oss/rancher-catalog.git
- Branch: v1.6-release-oss-internal
-
 ```sh
 ansible-galaxy install -r requirements.yml
 ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "docker,docker-config,rancher_server"
@@ -59,6 +51,16 @@ curl -L https://github.com/rancher/cli/releases/download/v0.6.2/rancher-darwin-a
 # or
 curl --socks5-hostname <proxyhost:port -L https://github.com/rancher/cli/releases/download/v0.6.2/rancher-darwin-amd64-v0.6.2.tar.xz | tar --strip-components=2 -xJ -C /usr/local/bin
 ```
+
+Create a rancher environment for k8s
+
+Add a custom catalog, which has a modified k8s cluster domain.
+(custom --cluster-domain of infra-templates/k8s/*/docker-compose.yml.tpl)
+1. Under Admin -> Setting -> Catalog
+2. Add catalog
+ Name: catalog-oss-internal
+ URL: https://github.com/home1-oss/rancher-catalog.git
+ Branch: v1.6-release-oss-internal
 
 ```sh
 rancher env template import env-tmpl-k8s-vxlan-oss-internal.yml
@@ -94,6 +96,8 @@ If dashboard not available
 KUBERNETES -> Infrastructure Stacks -> kubernetes
 1. Find container addon-starter
 2. Execute `addons-update.sh` on its cli
+
+> May be it is because vm resource too low to create k8s pods
 
 Play
 ```sh

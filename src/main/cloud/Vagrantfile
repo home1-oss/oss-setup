@@ -77,6 +77,7 @@ Vagrant.configure(2) do |config|
       end
 
       machine.vm.provider :virtualbox do |v|
+        v.customize ["modifyvm", :id, "--cpus", 2]
         #v.customize ["modifyvm", :id, "--memory", 2560]
         v.customize ["modifyvm", :id, "--memory", 3840]
         v.customize ["modifyvm", :id, "--name", "rancherhost#{machine_id}"]
@@ -104,6 +105,7 @@ Vagrant.configure(2) do |config|
   #  rancherhost1.vm.network :private_network, ip: "172.22.101.3", nic_type: "82545EM"
   #
   #  rancherhost1.vm.provider :virtualbox do |v|
+  #    v.customize ["modifyvm", :id, "--cpus", 2]
   #    v.customize ["modifyvm", :id, "--memory", 2048]
   #    v.customize ["modifyvm", :id, "--name", "rancherhost1"]
   #    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
@@ -119,6 +121,7 @@ Vagrant.configure(2) do |config|
   #  rancherhost2.vm.network :private_network, ip: "172.22.101.4", nic_type: "82545EM"
   #
   #  rancherhost2.vm.provider :virtualbox do |v|
+  #    v.customize ["modifyvm", :id, "--cpus", 2]
   #    v.customize ["modifyvm", :id, "--memory", 2048]
   #    v.customize ["modifyvm", :id, "--name", "rancherhost2"]
   #    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
@@ -134,6 +137,7 @@ Vagrant.configure(2) do |config|
   #  rancherhost3.vm.network :private_network, ip: "172.22.101.5", nic_type: "82545EM"
   #
   #  rancherhost3.vm.provider :virtualbox do |v|
+  #    v.customize ["modifyvm", :id, "--cpus", 2]
   #    v.customize ["modifyvm", :id, "--memory", 2048]
   #    v.customize ["modifyvm", :id, "--name", "rancherhost3"]
   #    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
