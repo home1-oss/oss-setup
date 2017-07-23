@@ -45,41 +45,34 @@ Vagrant.configure(2) do |config|
       nic_type: "82545EM"
 
     rancherserver.vm.provider :virtualbox do |v|
-      v.customize ["modifyvm", :id, "--memory", 1024]
+      v.customize ["modifyvm", :id, "--memory", 1536]
       v.customize ["modifyvm", :id, "--name", "rancherserver"]
       v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
       v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
     end
   end
 
-  N = 2
+  N = 3
   (1..N).each do |machine_id|
     config.vm.define "rancherhost#{machine_id}" do |machine|
+      machine.vm.box= "ubuntu/trusty64"
+      machine.vm.box_url = "ubuntu/trusty64"
       machine.vm.hostname = "rancherhost#{machine_id}"
-      machine.vm.network "private_network", ip: "172.22.101.#{100+machine_id}",
-        nic_type: "82545EM"
+      machine.vm.network "private_network", ip: "172.22.101.#{100+machine_id}", nic_type: "82545EM"
 
       if machine_id == 1
         machine.vm.box= "ubuntu/xenial64"
         machine.vm.box_url = "ubuntu/xenial64"
-        #machine.vm.box= "ubuntu/trusty64"
-        #machine.vm.box_url = "ubuntu/trusty64"
       end
       if machine_id == 2
         machine.vm.box= "centos/7"
         machine.vm.box_url = "centos/7"
-        #machine.vm.box= "ubuntu/trusty64"
-        #machine.vm.box_url = "ubuntu/trusty64"
-      end
-      if machine_id == 3
-        machine.vm.box= "ubuntu/trusty64"
-        machine.vm.box_url = "ubuntu/trusty64"
       end
 
       machine.vm.provider :virtualbox do |v|
         v.customize ["modifyvm", :id, "--cpus", 2]
-        #v.customize ["modifyvm", :id, "--memory", 2560]
         v.customize ["modifyvm", :id, "--memory", 3840]
+        #v.customize ["modifyvm", :id, "--memory", 4096]
         v.customize ["modifyvm", :id, "--name", "rancherhost#{machine_id}"]
         v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
         v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
@@ -106,7 +99,7 @@ Vagrant.configure(2) do |config|
   #
   #  rancherhost1.vm.provider :virtualbox do |v|
   #    v.customize ["modifyvm", :id, "--cpus", 2]
-  #    v.customize ["modifyvm", :id, "--memory", 2048]
+  #    v.customize ["modifyvm", :id, "--memory", 3840]
   #    v.customize ["modifyvm", :id, "--name", "rancherhost1"]
   #    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   #    v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
@@ -122,7 +115,7 @@ Vagrant.configure(2) do |config|
   #
   #  rancherhost2.vm.provider :virtualbox do |v|
   #    v.customize ["modifyvm", :id, "--cpus", 2]
-  #    v.customize ["modifyvm", :id, "--memory", 2048]
+  #    v.customize ["modifyvm", :id, "--memory", 3840]
   #    v.customize ["modifyvm", :id, "--name", "rancherhost2"]
   #    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   #    v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
@@ -138,7 +131,7 @@ Vagrant.configure(2) do |config|
   #
   #  rancherhost3.vm.provider :virtualbox do |v|
   #    v.customize ["modifyvm", :id, "--cpus", 2]
-  #    v.customize ["modifyvm", :id, "--memory", 2048]
+  #    v.customize ["modifyvm", :id, "--memory", 3840]
   #    v.customize ["modifyvm", :id, "--name", "rancherhost3"]
   #    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   #    v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
