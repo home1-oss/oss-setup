@@ -14,3 +14,10 @@ ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_p
 ```sh
 vagrant destroy -f && rm -rf .vagrant
 ```
+
+## References
+
+Vagrant and VirtualBox's shared folder
+
+[config.vm.synced_folder](https://www.vagrantup.com/docs/synced-folders/basic_usage.html)
+[Vagrant can't mount shared folder in VirtualBox 4.3.10](https://github.com/mitchellh/vagrant/issues/3341)
