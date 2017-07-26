@@ -16,5 +16,5 @@ jce_policy-*.zip
 *.retry
 src/main/cloud/roles/oss-docker-install
 src/main/docker
-src/main/playbook/**/roles
+src/main/develop/**/roles
 src/main/raw/roles/oss-docker-install
