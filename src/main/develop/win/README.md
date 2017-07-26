@@ -47,4 +47,13 @@ change '# db_home:  /home/%U' to 'db_home:  windows'
 
 chere -i -t mintty .
 
+# see: https://github.com/atom/atom/blob/master/docs/build-instructions/windows.md
+choco install nvm --version 1.1.1 -y
+nvm install v6.11.0
+choco install python2 -y
+choco install 7zip -y
+#choco install 7zip.install -y
+choco install visualcppbuildtools --version 14.0.25123.0 -y
+# in powershell '[Environment]::SetEnvironmentVariable("GYP_MSVS_VERSION", "2015", "User")'
+refreshenv
 choco install atom -y
