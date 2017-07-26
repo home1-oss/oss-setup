@@ -36,6 +36,7 @@ gawk,^
 subversion,^
 tar,^
 zip,^
+unzip,^
 vim,^
 wget,^
 zlib-devel

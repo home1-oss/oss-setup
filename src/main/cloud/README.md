@@ -20,7 +20,7 @@ vagrant up
 ## Run rancher
 
 ```sh
-ansible-galaxy install -r requirements.yml
+ansible-galaxy install -v --force -r requirements.yml
 ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml
 ```
 
@@ -41,14 +41,17 @@ cat pull_gcr_images.sh | ssh -F /tmp/ssh-config-rancherhost1 root@rancherhost1
 - Run runcher server
 
 ```sh
-ansible-galaxy install -r requirements.yml
+ansible-galaxy install -v --force -r requirements.yml
 ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "docker,docker-config,rancher_server"
 
+# bind hosts '172.22.101.100 rancherserver.internal'
+mkdir -p ~/.oss
 curl 'http://rancherserver.internal/v2-beta/apikey' \
     -H 'content-type: application/json' \
     --data-binary '{"type":"apikey","accountId":"1a1","name":"cli","description":"","created":null,"kind":null,"removeTime":null,"removed":null,"uuid":null}' \
     > ~/.oss/rancher-api-key.json
 
+# edit ~/.bash_profile, add following lines
 export RANCHER_URL=http://rancherserver.internal:80
 #export RANCHER_URL=http://rancherserver.internal:80/v2-beta
 export RANCHER_ACCESS_KEY=$(cat ~/.oss/rancher-api-key.json | jq -r ".publicValue")
@@ -61,6 +64,13 @@ export RANCHER_SECRET_KEY=$(cat ~/.oss/rancher-api-key.json | jq -r ".secretValu
 curl -L https://github.com/rancher/cli/releases/download/v0.6.2/rancher-darwin-amd64-v0.6.2.tar.xz | tar --strip-components=2 -xJ -C /usr/local/bin
 # or
 curl --socks5-hostname <proxyhost:port -L https://github.com/rancher/cli/releases/download/v0.6.2/rancher-darwin-amd64-v0.6.2.tar.xz | tar --strip-components=2 -xJ -C /usr/local/bin
+
+# for windows user using cygwin
+curl -L -o rancher-windows-amd64-v0.6.2.zip https://github.com/rancher/cli/releases/download/v0.6.2/rancher-windows-amd64-v0.6.2.zip
+unzip rancher-windows-amd64-v0.6.2.zip
+rm -f rancher-windows-amd64-v0.6.2.zip
+mv rancher-v0.6.2/rancher.exe /usr/local/bin/
+rm -rf rancher-v0.6.2
 ```
 
 - Create a rancher environment for k8s

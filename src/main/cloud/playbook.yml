@@ -30,7 +30,7 @@
     - { role: rancher_server, tags: ["rancher_server"] }
 
 - name: Register Rancher Hosts
-  hosts: "{{ hosts }}"
+  hosts: "{{ hosts | default('hosts') }}"
   sudo: yes
   roles:
     - { role: rancher_reg, tags: ["rancher_reg"] }
