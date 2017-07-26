@@ -1,4 +1,6 @@
 ---
+hosts: "hosts"
+
 rancher_port: "80"
 
 #docker_insecure_registries: ["172.22.101.10:25000", "172.22.101.10:25001", "172.22.101.10:25004"]

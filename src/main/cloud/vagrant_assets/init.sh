@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+##!/usr/bin/env bash
+#/usr/bin/env bash No such file or directory on ubuntu/trusty64
 
 SHELL_PROFILE="/home/vagrant/.bash_profile"
 TMP="/tmp"
