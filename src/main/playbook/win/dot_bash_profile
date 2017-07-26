@@ -1,0 +1,9 @@
+
+#export http_proxy=http://localhost:8118/
+#export https_proxy=http://localhost:8118/
+
+# Ansible settings
+ANSIBLE=/opt/ansible
+export PATH=$PATH:$ANSIBLE/bin
+export PYTHONPATH=$ANSIBLE/lib
+export ANSIBLE_LIBRARY=$ANSIBLE/library
