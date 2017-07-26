@@ -102,10 +102,14 @@ npm_packages:
   state: present
   version: "^0.0.6"
   global: true
-pip_packages: []
+#pip_packages: []
 # - name: mkdocs
 #   state: present # present/absent/latest, default: present
 #   version: "0.16.3" # default: N/A
+pip_packages:
+- name: jmespath
+  state: present
+  version: "0.9.3"
 
 # Glob pattern to ansible task files to run after all other tasks are finished.
 post_provision_tasks: []

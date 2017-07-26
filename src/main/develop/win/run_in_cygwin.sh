@@ -20,6 +20,7 @@ if [ ! -d /opt/ansible ]; then
     source ./hacking/env-setup
     easy_install-2.7 pip
     pip install -r ./requirements.txt
+    pip install jmespath
 
     git pull --rebase
 
@@ -28,6 +29,6 @@ if [ ! -d /opt/ansible ]; then
     #git submodule update --init lib/ansible/modules/core
     #git submodule update --init lib/ansible/modules/extras
     #git submodule update --init --recursive
-    
+
     git checkout v2.3.1.0-1
 fi
