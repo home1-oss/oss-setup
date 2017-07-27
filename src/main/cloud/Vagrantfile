@@ -43,6 +43,7 @@ Vagrant.configure(2) do |config|
     rancherserver.vm.box= "ubuntu/trusty64"
     rancherserver.vm.box_url = "ubuntu/trusty64"
 
+    rancherserver.vm.network :forwarded_port, guest: 22, host: 60100
     rancherserver.vm.network :private_network, ip: "172.22.101.100",
       nic_type: "82545EM"
 
@@ -60,6 +61,7 @@ Vagrant.configure(2) do |config|
       machine.vm.box= "ubuntu/trusty64"
       machine.vm.box_url = "ubuntu/trusty64"
       machine.vm.hostname = "rancherhost#{machine_id}"
+      machine.vm.network :forwarded_port, guest: 22, host: 60100+machine_id
       machine.vm.network "private_network", ip: "172.22.101.#{100+machine_id}", nic_type: "82545EM"
 
       if machine_id == 1

@@ -37,8 +37,11 @@ for registry in ${REGISTRIES[@]}; do
             tags+=("${tag}")
         fi
         printf "all tags     : %s\n" "$(echo "${tags[@]}" | sort -V -r)"
-        tags=($(echo "${tags[@]}" | sort -V -r | head -n5))
-        printf "selected tag: %s\n" "${tags[@]}"
+        tags=("$(echo "${tags[@]}" | grep -Ev "[-]?rc[0-9]*\$")")
+        tags=("$(echo "${tags[@]}" | grep -Ev "[-]?alpha[0-9]*\$")")
+        tags=("$(echo "${tags[@]}" | grep -Ev "[-]?beta[0-9]*\$")")
+        tags=("$(echo "${tags[@]}" | sort -V -r | head -n5)")
+        printf "selected tag: %s\n" "$(echo "${tags[@]}")"
 
         for tag in ${tags[@]}; do
             full_image="${registry}/${image}:${tag}"
