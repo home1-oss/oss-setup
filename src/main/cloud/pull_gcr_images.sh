@@ -21,7 +21,7 @@ GCR_IO_IMAGES+=('gcr.io/google_containers/kubernetes-dashboard-amd64:v1.6.1')
 GCR_IO_IMAGES+=('gcr.io/google_containers/heapster-amd64:v1.3.0-beta.1')
 GCR_IO_IMAGES+=('gcr.io/kubernetes/heapster_influxdb:v1.1.1')
 #GCR_IO_IMAGES+=('gcr.io/google_containers/heapster_grafana')
-GCR_IO_IMAGES+=('gcr.io/google_containers/heapster_grafana-amd64:v4.0.2')
+GCR_IO_IMAGES+=('gcr.io/google_containers/heapster-grafana-amd64:v4.0.2')
 
 REGISTRIES=()
 REGISTRIES+=('172.22.101.10:25004')
