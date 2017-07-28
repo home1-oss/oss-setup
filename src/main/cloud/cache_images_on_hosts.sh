@@ -8,8 +8,8 @@ for host in ${HOSTS[@]}; do
     echo "host: ${host}"
 
     scp pull_gcr_images.sh root@${host}:/tmp/
-    ssh root@${host} '/tmp/pull_gcr_images.sh'
+    ssh root@${host} '/tmp/pull_gcr_images.sh "origin"'
 
     scp pull_rancher_images.sh root@${host}:/tmp/
-    ssh root@${host} '/tmp/pull_rancher_images.sh'
+    ssh root@${host} '/tmp/pull_rancher_images.sh "origin"'
 done

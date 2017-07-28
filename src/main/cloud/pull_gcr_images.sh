@@ -41,20 +41,33 @@ GCR_IO_IMAGES+=('gcr.io/kubernetes/heapster_influxdb:v1.1.1')
 #GCR_IO_IMAGES+=('gcr.io/google_containers/heapster-grafana-amd64')
 GCR_IO_IMAGES+=('gcr.io/google_containers/heapster-grafana-amd64:v4.0.2')
 
-REGISTRIES=()
-REGISTRIES+=('172.22.101.10:25004')
-REGISTRIES+=('172.22.101.10:25001')
+from="$1"
+if [ -z "${from}" ]; then from="registries"; fi
 
-for registry in ${REGISTRIES[@]}; do
+REGISTRIES=()
+if [ "${from}" == "registries" ]; then
+    REGISTRIES+=('172.22.101.10:25004')
+    REGISTRIES+=('172.22.101.10:25001')
+else
+    REGISTRIES+=('')
+fi
+
+for registry in "${REGISTRIES[@]}"; do
     echo "registry: ${registry}"
 
-    for image in ${GCR_IO_IMAGES[@]}; do
-        image=$(echo ${image} | sed -E 's#[^/]+/(.+)#\1#')
+    for image in "${GCR_IO_IMAGES[@]}"; do
+        if [ ! -z "${registry}" ] || [[ "${image}" == _/* ]]; then
+            image=$(echo ${image} | sed -E 's#[^/]+/(.+)#\1#')
+        fi
         tag=$(echo ${image} | awk -F: '{print $2}')
         tags=()
         if [ -z "${tag}" ]; then
-            echo "curl http://${registry}/v2/${image}/tags/list | jq -r '.tags'"
-            tags=$(curl http://${registry}/v2/${image}/tags/list | jq -r '.tags | to_entries[] | "\(.value)"' | grep -v null)
+            if [ ! -z "${registry}" ]; then
+                echo "curl http://${registry}/v2/${image}/tags/list | jq -r '.tags'"
+                tags=$(curl http://${registry}/v2/${image}/tags/list | jq -r '.tags | to_entries[] | "\(.value)"' | grep -v null)
+            else
+                tags+=("latest")
+            fi
         else
             image=$(echo ${image} | awk -F: '{print $1}')
             tags+=("${tag}")
@@ -62,7 +75,11 @@ for registry in ${REGISTRIES[@]}; do
         printf "all tags     : %s\n" "$(echo "${tags[@]}" | sort -V -r)"
 
         for tag in ${tags[@]}; do
-            full_image="${registry}/${image}:${tag}"
+            if [ ! -z "${registry}" ]; then
+                full_image="${registry}/${image}:${tag}"
+            else
+                full_image="${image}:${tag}"
+            fi
             echo pull image ${full_image}
             docker pull ${full_image}
         done
