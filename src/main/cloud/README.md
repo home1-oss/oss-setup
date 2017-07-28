@@ -136,6 +136,7 @@ When hosts added and services ready, there will be a 'KUBERNETES' drop down menu
 ```sh
 kubectl get nodes
 kubectl get pods --all-namespaces
+kubectl describe pod <pod_name> --namespace=kube-system
 ```
 
 ## Destroy

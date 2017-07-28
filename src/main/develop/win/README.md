@@ -57,3 +57,5 @@ choco install visualcppbuildtools --version 14.0.25123.0 -y
 # in powershell '[Environment]::SetEnvironmentVariable("GYP_MSVS_VERSION", "2015", "User")'
 refreshenv
 choco install atom -y
+
+choco install kubernetes-cli -y

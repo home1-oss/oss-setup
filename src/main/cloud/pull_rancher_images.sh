@@ -1,5 +1,14 @@
 
-if ! type -p jq > /dev/null; then sudo apt-get update -y; sudo apt-get install -y jq; fi
+if ! type -p jq > /dev/null; then
+    if type -p apt-get > /dev/null; then
+        sudo apt-get update -y; sudo apt-get install -y jq;
+    elif type -p yum > /dev/null; then
+        sudo yum install -y jq
+    else
+        printf 'please install jq manually\n'
+        exit 1
+    fi
+fi
 
 RANCHER_IMAGES=()
 RANCHER_IMAGES+=('_/rancher/agent:v1.2.5')
