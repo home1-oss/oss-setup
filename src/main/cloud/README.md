@@ -122,6 +122,8 @@ KUBERNETES -> Infrastructure Stacks -> kubernetes
 
 Or use shell script:
 ```sh
+# on windows host, socket: An address incompatible with the requested protocol was used
+# see: https://github.com/rancher/rancher/issues/7262
 rancher --env env-k8s-vxlan-oss-internal exec $(rancher --env env-k8s-vxlan-oss-internal ps -a -s -c | grep kubernetes-addon-starter  | awk '{print $1}') addons-update.sh
 ```
 
