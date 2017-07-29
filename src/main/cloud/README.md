@@ -31,10 +31,7 @@ ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_p
 
 - Cache images from gcr.io
 see: [Private Registry with Kubernetes in Rancher](http://rancher.com/docs/rancher/v1.6/en/kubernetes/private-registry/)
-```sh
-vagrant ssh-config rancherhost1 > /tmp/ssh-config-rancherhost1
-cat pull_gcr_images.sh | ssh -F /tmp/ssh-config-rancherhost1 root@rancherhost1
-```
+`cache_images_on_hosts.sh`
 
 - Deactivate Default (cattle) environment `rancher --env Default env deactivate Default`, this step is optional
 
@@ -42,7 +39,7 @@ cat pull_gcr_images.sh | ssh -F /tmp/ssh-config-rancherhost1 root@rancherhost1
 
 ```sh
 ansible-galaxy install -v --force -r requirements.yml
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "docker,docker-config,rancher_server"
+ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "docker,docker-config,rancher_server" -e "http_proxy=http://172.22.101.10:28119 https_proxy=http://172.22.101.10:28119"
 
 # bind hosts '172.22.101.100 rancherserver.internal'
 mkdir -p ~/.oss

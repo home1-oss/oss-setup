@@ -1,4 +1,7 @@
 
+#vagrant ssh-config rancherhost1 > /tmp/ssh-config-rancherhost1
+#cat pull_gcr_images.sh | ssh -F /tmp/ssh-config-rancherhost1 root@rancherhost1
+
 HOSTS=()
 HOSTS+=('172.22.101.101')
 HOSTS+=('172.22.101.102')
