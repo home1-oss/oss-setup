@@ -11,6 +11,12 @@
 #  roles:
 #    - { role: docker, tags: ["docker"] }
 
+- name: Privoxy
+  hosts: "repository"
+  sudo: yes
+  roles:
+    - { role: docker-privoxy, tags: ["docker-privoxy"] }
+
 - name: Docker mirror gcr.io
   hosts: "repository"
   sudo: yes
