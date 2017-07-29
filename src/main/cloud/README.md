@@ -47,13 +47,16 @@ curl 'http://rancherserver.internal/v2-beta/apikey' \
     -H 'content-type: application/json' \
     --data-binary '{"type":"apikey","accountId":"1a1","name":"cli","description":"","created":null,"kind":null,"removeTime":null,"removed":null,"uuid":null}' \
     > ~/.oss/rancher-api-key.json
+```
 
-# edit ~/.bash_profile, add following lines
+Edit ~/.bash_profile, add following lines
+```sh
 export RANCHER_URL=http://rancherserver.internal:80
 #export RANCHER_URL=http://rancherserver.internal:80/v2-beta
 export RANCHER_ACCESS_KEY=$(cat ~/.oss/rancher-api-key.json | jq -r ".publicValue")
 export RANCHER_SECRET_KEY=$(cat ~/.oss/rancher-api-key.json | jq -r ".secretValue")
 ```
+`source ~/.bash_profile`
 
 - Install rancher cli
 
