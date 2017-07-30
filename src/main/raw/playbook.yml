@@ -3,7 +3,7 @@
   hosts: all
   sudo: yes
   roles:
-    - { role: home1-oss.oss-docker-install, tags: ["docker"] }
+  - { role: home1-oss.oss-docker-install, tags: ["docker"] }
 
 #- name: Installing and configuring Docker
 #  hosts: all
@@ -11,26 +11,202 @@
 #  roles:
 #    - { role: docker, tags: ["docker"] }
 
-- name: Privoxy
-  hosts: "repository"
+- name: clean up
+  hosts: all
+  tasks:
+  - shell: docker images | grep none | awk '{print $3}' | xargs docker rmi; docker rmi $(docker images -f "dangling=true" -q); docker volume rm $(docker volume ls -qf dangling=true)
+    ignore_errors: true
+    sudo: yes
+    tags:
+    - always
+
+- name: DNS
+  hosts: "net"
+  environment:
+    FORWARDERS: "{{ forwarders }}"
+    INFRASTRUCTURE: "{{ infrastructure }}"
   sudo: yes
   roles:
-    - { role: docker-privoxy, tags: ["docker-privoxy"] }
+  - { role: docker-bind, tags: ["dns"] }
+
+- name: Setup /etc/resolv.conf
+  hosts: ["repository", "ci"]
+  vars:
+    resolv_conf_nameservers:
+    - 172.22.101.5
+    - "{{ forwarders }}"
+    - 8.8.4.4
+    - 8.8.8.8
+    #resolv_conf_search_domains:
+    #- example.com
+  roles:
+  - { role: kbrebanov.resolv_conf, tags: ["dns"] }
+
+- name: Privoxy
+  hosts: "net"
+  environment:
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    SOCKS_PROXY: "{{ proxy }}"
+  sudo: yes
+  roles:
+  - { role: docker-privoxy, tags: ["privoxy"] }
+
+- hosts: "net"
+  tasks:
+  - name: DNS record of smart-http-proxy
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} http-to-socks A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} http-to-socks A 172.22.101.5"
+    sudo: yes
+    tags: ["dns"]
+  - name: DNS record of http-to-socks
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} smart-http-proxy A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} smart-http-proxy A 172.22.101.5"
+    sudo: yes
+    tags: ["dns", "privoxy"]
+
+- name: LDAP
+  hosts: "net"
+  environment:
+    INFRASTRUCTURE: "{{ infrastructure }}"
+  sudo: yes
+  roles:
+  - { role: docker-openldap, tags: ["ldap"] }
+- hosts: "net"
+  tasks:
+  - name: DNS record of ldap
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} ldap A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} ldap A 172.22.101.5"
+    sudo: yes
+    tags: ["dns"]
+  - name: DNS record of phpldapadmin
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} phpldapadmin A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} phpldapadmin A 172.22.101.5"
+    sudo: yes
+    tags: ["dns", "ldap"]
 
 - name: Docker mirror gcr.io
   hosts: "repository"
+  environment:
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    PROXY: "{{ proxy }}"
+    PULL_THROUGH_CACHE_OF: https://gcr.io
+    PULL_THROUGH_CACHE_PORT: 25004
   sudo: yes
   roles:
-    - { role: docker-mirror-gcr, tags: ["docker-mirror-gcr"] }
+  - { role: docker-pull-through-cache, tags: ["nexus3"] }
+- hosts: "net"
+  tasks:
+  - name: DNS record of gcr.io
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} gcr.io A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} gcr.io A 172.22.101.10"
+    sudo: yes
+    tags: ["dns", "nexus3"]
 
 - name: Nexus3
   hosts: "repository"
-  sudo: yes
-  roles:
-    - { role: docker-nexus3, tags: ["docker-nexus3"] }
+  environment:
+    DOCKER_MIRROR_GCR: http://gcr.io.internal:25004
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    NEXUS_CONTEXT: nexus
+    NEXUS3_CONTEXT: nexus
+    NEXUS3_DEPLOYMENT_PASSWORD: deployment
+    NEXUS3_PORT: 28081
 
-- name: Gitlab
-  hosts: "repository"
+    BACKEND_DOMAIN: nexus3
+    BASIC_AUTH_PASS: deployment
+    BASIC_AUTH_USER: deployment
+    SERVER_NAME: 172.22.101.10
   sudo: yes
   roles:
-    - { role: docker-gitlab, tags: ["docker-gitlab"] }
+  - { role: docker-nexus3, tags: ["nexus3"] }
+- hosts: "net"
+  tasks:
+  - name: DNS record of nexus3
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} nexus3 A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} nexus3 A 172.22.101.10"
+    sudo: yes
+    tags: ["dns", "nexus3"]
+  - name: DNS record of mirror.docker
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} mirror.docker A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} mirror.docker A 172.22.101.10"
+    sudo: yes
+    tags: ["dns", "nexus3"]
+  - name: DNS record of registry.docker
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} registry.docker A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} registry.docker A 172.22.101.10"
+    sudo: yes
+    tags: ["dns", "nexus3"]
+
+- name: MySQL
+  hosts: "repository"
+  environment:
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_USER: user
+    MYSQL_PASSWORD: user_pass
+    DB_NAME: db
+  sudo: yes
+  roles:
+  - { role: docker-mysql, tags: ["mysql"] }
+- hosts: "net"
+  tasks:
+  - name: DNS record of mysql
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} mysql A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} mysql A 172.22.101.10"
+    sudo: yes
+    tags: ["dns", "mysql"]
+
+- name: PostgreSQL
+  hosts: "repository"
+  environment:
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    POSTGRES_USER: user
+    POSTGRES_PASSWORD: user_pass
+    SONARQUBE_JDBC_USERNAME: sonar
+    SONARQUBE_JDBC_PASSWORD: sonar
+  sudo: yes
+  roles:
+  - { role: docker-postgresql, tags: ["postgresql"] }
+- hosts: "net"
+  tasks:
+  - name: DNS record of postgresql
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} postgresql A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} postgresql A 172.22.101.10"
+    sudo: yes
+    tags: ["dns", "postgresql"]
+
+#- name: Gitlab
+#  hosts: "ci"
+#  environment:
+#    INFRASTRUCTURE: "{{ infrastructure }}"
+#  sudo: yes
+#  roles:
+#  - { role: docker-gitlab, tags: ["gitlab"] }
+#
+#- name: Jenkins
+#  hosts: "ci"
+#  environment:
+#    INFRASTRUCTURE: "{{ infrastructure }}"
+#  sudo: yes
+#  roles:
+#  - { role: docker-jenkins, tags: ["jenkins"] }

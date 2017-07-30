@@ -1,32 +1,16 @@
 ---
-- name: Pull home1oss/privoxy:3.0.24
-  docker_image:
-    name: home1oss/privoxy:3.0.24
+- name: git clone https://github.com/home1-oss/docker-privoxy.git
+  git:
+    repo: https://github.com/home1-oss/docker-privoxy.git
+    dest: /tmp/docker-privoxy
+    force: yes
+    update: yes
+    version: "{{ branch }}"
 
-- name: Run http-to-socks.internal
-  docker_container:
-    env:
-      HTTP_TO_SOCKS_PORT: 28118
-      SOCKS_PROXY: "{{ proxy }}"
-    hostname: "http-to-socks.internal"
-    image: home1oss/privoxy:3.0.24
-    name: "http-to-socks.internal"
-    ports:
-      - "28118:28118"
-    restart_policy: always
-    networks:
-      - name: oss-network
-
-- name: Run smart-http-proxy.internal
-  docker_container:
-    env:
-      SMART_HTTP_PROXY_PORT: 28119
-      UPSTREAM_PROXY_HOST_PORT: http-to-socks.internal:28118
-    hostname: "smart-http-proxy.internal"
-    image: home1oss/privoxy:3.0.24
-    name: "smart-http-proxy.internal"
-    ports:
-      - "28119:28119"
-    restart_policy: always
-    networks:
-      - name: oss-network
+- name: docker-compose up docker-privoxy
+  docker_service:
+    build: no
+    files: docker-compose.yml
+    project_src: /tmp/docker-privoxy
+    pull: yes
+    remove_volumes: no

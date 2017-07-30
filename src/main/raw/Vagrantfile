@@ -1,6 +1,5 @@
 
 Vagrant.configure(2) do |config|
-
     config.ssh.insert_key = false
 
     config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'" # avoids 'stdin: is not a tty' error.
@@ -13,18 +12,49 @@ Vagrant.configure(2) do |config|
       chown -R root:root /root/.ssh
     SCRIPT
 
+    config.vm.define "net" do |net|
+      net.vm.box= "ubuntu/trusty64"
+      net.vm.box_url = "ubuntu/trusty64"
+      net.vm.hostname = 'net'
+
+      net.vm.network :private_network, ip: "172.22.101.5", nic_type: "82545EM"
+
+      net.vm.provider :virtualbox do |v|
+        v.customize ["modifyvm", :id, "--cpus", 1]
+        v.customize ["modifyvm", :id, "--memory", 1024]
+        v.customize ["modifyvm", :id, "--name", "net"]
+        v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+        v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
+      end
+    end
+
     config.vm.define "repository" do |repository|
-      repository.vm.hostname = 'repository'
       repository.vm.box= "ubuntu/trusty64"
       repository.vm.box_url = "ubuntu/trusty64"
+      repository.vm.hostname = 'repository'
 
-      repository.vm.network :private_network, ip: "172.22.101.10",
-        nic_type: "82545EM"
+      repository.vm.network :private_network, ip: "172.22.101.10", nic_type: "82545EM"
 
       repository.vm.provider :virtualbox do |v|
         v.customize ["modifyvm", :id, "--cpus", 2]
-        v.customize ["modifyvm", :id, "--memory", 3840]
+        v.customize ["modifyvm", :id, "--memory", 2048]
         v.customize ["modifyvm", :id, "--name", "repository"]
+        v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+        v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
+      end
+    end
+
+    config.vm.define "ci" do |ci|
+      ci.vm.box= "ubuntu/trusty64"
+      ci.vm.box_url = "ubuntu/trusty64"
+      ci.vm.hostname = 'ci'
+
+      ci.vm.network :private_network, ip: "172.22.101.15", nic_type: "82545EM"
+
+      ci.vm.provider :virtualbox do |v|
+        v.customize ["modifyvm", :id, "--cpus", 2]
+        v.customize ["modifyvm", :id, "--memory", 4096]
+        v.customize ["modifyvm", :id, "--name", "ci"]
         v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
         v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
       end

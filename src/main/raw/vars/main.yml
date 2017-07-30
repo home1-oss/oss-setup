@@ -2,4 +2,7 @@
 
 create_oss_network: yes
 
+branch: "master"
+forwarders: ""
+infrastructure: "local"
 proxy: ""
