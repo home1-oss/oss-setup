@@ -4,14 +4,6 @@ branch: "master"
 
 create_oss_network: yes
 
-docker_insecure_registries:
-- registry.docker.internal:80
-- mirror.docker.internal:80
-- gcr.io.internal:25004
-
-docker_registry_mirrors:
-- mirror.docker.internal:80
-
 forwarders: ""
 infrastructure: "local"
 proxy: ""
