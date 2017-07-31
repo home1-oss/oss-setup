@@ -343,6 +343,17 @@
     sudo: yes
     tags: ["dns", "cloudbus"]
 
+- name: Docker config
+  hosts: ["ci"]
+  sudo: yes
+  roles:
+    - { role: home1-oss.oss-docker-config, tags: ["docker-config"] }
+#- name: Docker config
+#  hosts: all
+#  sudo: yes
+#  roles:
+#    - { role: oss-docker-config, tags: ["docker-config"] }
+
 
 - name: sonarqube
   hosts: "ci"
@@ -364,7 +375,7 @@
     shell: "{{ item }}"
     with_items:
     - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} sonarqube A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} sonarqube A 172.22.101.10"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} sonarqube A 172.22.101.15"
     sudo: yes
     tags: ["dns", "sonarqube"]
 
@@ -394,7 +405,27 @@
     shell: "{{ item }}"
     with_items:
     - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} gitlab A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} gitlab A 172.22.101.10"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} gitlab A 172.22.101.15"
+    sudo: yes
+    tags: ["dns", "gitlab"]
+- name: git
+  hosts: "repository"
+  vars:
+    file: docker-compose-git.yml
+  environment:
+    BACKEND_DOMAIN: nexus3
+    BACKEND_PORT: 10080
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    SERVER_DOMAIN: git
+  roles:
+  - { role: docker-proxy, tags: ["gitlab"] }
+- hosts: "net"
+  tasks:
+  - name: DNS record of git
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} git A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} git A 172.22.101.15"
     sudo: yes
     tags: ["dns", "gitlab"]
 
@@ -416,6 +447,6 @@
     shell: "{{ item }}"
     with_items:
     - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} jenkins A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} jenkins A 172.22.101.10"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} jenkins A 172.22.101.15"
     sudo: yes
     tags: ["dns", "jenkins"]

@@ -11,7 +11,7 @@ ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_p
     -e "create_oss_network=True branch=develop infrastructure=internal forwarders=10.0.2.3 proxy=socks5://127.0.0.1:1080"
 # or start specific services
 ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
-    --tags "dns,privoxy,ldap,nexus3,mysql,postgresql,cloudbus,sonarqube,gitlab,jenkins" \
+    --tags "dns,privoxy,ldap,nexus3,mysql,postgresql,cloudbus,docker-config,sonarqube,gitlab,jenkins" \
     -e "create_oss_network=True branch=develop infrastructure=internal forwarders=10.0.2.3 proxy=socks5://127.0.0.1:1080"
 ```
 
