@@ -12,5 +12,5 @@
     build: no
     files: docker-compose.yml
     project_src: /tmp/docker-bind
-    pull: yes
+#    pull: yes
     remove_volumes: no

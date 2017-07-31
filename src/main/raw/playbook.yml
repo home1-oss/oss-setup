@@ -1,15 +1,13 @@
 ---
 - name: Installing and configuring Docker
   hosts: all
-  sudo: yes
   roles:
   - { role: home1-oss.oss-docker-install, tags: ["docker"] }
 
 #- name: Installing and configuring Docker
 #  hosts: all
-#  sudo: yes
 #  roles:
-#    - { role: docker, tags: ["docker"] }
+#  - { role: docker, tags: ["docker"] }
 
 - name: clean up
   hosts: all
@@ -20,12 +18,11 @@
     tags:
     - always
 
-- name: DNS
+- name: dns
   hosts: "net"
   environment:
     FORWARDERS: "{{ forwarders }}"
     INFRASTRUCTURE: "{{ infrastructure }}"
-  sudo: yes
   roles:
   - { role: docker-bind, tags: ["dns"] }
 
@@ -42,15 +39,13 @@
   roles:
   - { role: kbrebanov.resolv_conf, tags: ["dns"] }
 
-- name: Privoxy
+- name: privoxy
   hosts: "net"
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
     SOCKS_PROXY: "{{ proxy }}"
-  sudo: yes
   roles:
   - { role: docker-privoxy, tags: ["privoxy"] }
-
 - hosts: "net"
   tasks:
   - name: DNS record of smart-http-proxy
@@ -72,7 +67,6 @@
   hosts: "net"
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
-  sudo: yes
   roles:
   - { role: docker-openldap, tags: ["ldap"] }
 - hosts: "net"
@@ -92,14 +86,15 @@
     sudo: yes
     tags: ["dns", "ldap"]
 
-- name: Docker mirror gcr.io
+
+- name: gcr.io
   hosts: "repository"
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
     PROXY: "{{ proxy }}"
     PULL_THROUGH_CACHE_OF: https://gcr.io
     PULL_THROUGH_CACHE_PORT: 25004
-  sudo: yes
+    with_items: "{{ role_name }}_anystring"
   roles:
   - { role: docker-pull-through-cache, tags: ["nexus3"] }
 - hosts: "net"
@@ -112,7 +107,7 @@
     sudo: yes
     tags: ["dns", "nexus3"]
 
-- name: Nexus3
+- name: nexus3
   hosts: "repository"
   environment:
     DOCKER_MIRROR_GCR: http://gcr.io.internal:25004
@@ -121,12 +116,6 @@
     NEXUS3_CONTEXT: nexus
     NEXUS3_DEPLOYMENT_PASSWORD: deployment
     NEXUS3_PORT: 28081
-
-    BACKEND_DOMAIN: nexus3
-    BASIC_AUTH_PASS: deployment
-    BASIC_AUTH_USER: deployment
-    SERVER_NAME: 172.22.101.10
-  sudo: yes
   roles:
   - { role: docker-nexus3, tags: ["nexus3"] }
 - hosts: "net"
@@ -138,6 +127,41 @@
     - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} nexus3 A 172.22.101.10"
     sudo: yes
     tags: ["dns", "nexus3"]
+
+- name: fileserver
+  hosts: "repository"
+  vars:
+    file: docker-compose-fileserver.yml
+  environment:
+    BACKEND_DOMAIN: nexus3
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    SERVER_LOCATION: ~ ^/(.*)
+    SERVER_PROXY_PASS_CONTEXT: /nexus/repository/files/$1
+  roles:
+  - { role: docker-proxy, tags: ["nexus3"] }
+- hosts: "net"
+  tasks:
+  - name: DNS record of fileserver
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} fileserver A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} fileserver A 172.22.101.10"
+    sudo: yes
+    tags: ["dns", "nexus3"]
+
+- name: mirror.docker
+  hosts: "repository"
+  vars:
+    file: docker-compose-mirror.yml
+  environment:
+    BACKEND_DOMAIN: nexus3
+    BASIC_AUTH_PASS: deployment
+    BASIC_AUTH_USER: deployment
+    INFRASTRUCTURE: "{{ infrastructure }}"
+  roles:
+  - { role: docker-proxy, tags: ["nexus3"] }
+- hosts: "net"
+  tasks:
   - name: DNS record of mirror.docker
     shell: "{{ item }}"
     with_items:
@@ -145,6 +169,60 @@
     - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} mirror.docker A 172.22.101.10"
     sudo: yes
     tags: ["dns", "nexus3"]
+
+- name: mvnsite
+  hosts: "repository"
+  vars:
+    file: docker-compose-mvnsite.yml
+  environment:
+    BACKEND_DOMAIN: nexus3
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    SERVER_LOCATION: ~ ^/(.*)
+    SERVER_PROXY_PASS_CONTEXT: /nexus/repository/mvnsite/$1
+  roles:
+  - { role: docker-proxy, tags: ["nexus3"] }
+- hosts: "net"
+  tasks:
+  - name: DNS record of mvnsite
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} mvnsite A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} mvnsite A 172.22.101.10"
+    sudo: yes
+    tags: ["dns", "nexus3"]
+
+- name: nexus
+  hosts: "repository"
+  vars:
+    file: docker-compose-nexus.yml
+  environment:
+    BACKEND_DOMAIN: nexus3
+    INFRASTRUCTURE: "{{ infrastructure }}"
+  roles:
+  - { role: docker-proxy, tags: ["nexus3"] }
+- hosts: "net"
+  tasks:
+  - name: DNS record of nexus
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} nexus A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} nexus A 172.22.101.10"
+    sudo: yes
+    tags: ["dns", "nexus3"]
+
+- name: registry.docker
+  hosts: "repository"
+  vars:
+    file: docker-compose-registry.yml
+  environment:
+    BACKEND_DOMAIN: nexus3
+    BASIC_AUTH_PASS: deployment
+    BASIC_AUTH_USER: deployment
+    INFRASTRUCTURE: "{{ infrastructure }}"
+  roles:
+  - { role: docker-proxy, tags: ["nexus3"] }
+- hosts: "net"
+  tasks:
   - name: DNS record of registry.docker
     shell: "{{ item }}"
     with_items:
@@ -153,7 +231,26 @@
     sudo: yes
     tags: ["dns", "nexus3"]
 
-- name: MySQL
+- name: docker-proxy
+  hosts: "repository"
+  vars:
+    file: docker-compose.yml
+  environment:
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    SERVER_DOMAIN: "*"
+  roles:
+  - { role: docker-proxy, tags: ["nexus3"] }
+#- hosts: "net"
+#  tasks:
+#  - name: DNS record of docker-proxy
+#    shell: "{{ item }}"
+#    with_items:
+#    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} docker-proxy A"
+#    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} docker-proxy A 172.22.101.10"
+#    sudo: yes
+#    tags: ["dns", "nexus3"]
+
+- name: mysql
   hosts: "repository"
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
@@ -161,7 +258,6 @@
     MYSQL_USER: user
     MYSQL_PASSWORD: user_pass
     DB_NAME: db
-  sudo: yes
   roles:
   - { role: docker-mysql, tags: ["mysql"] }
 - hosts: "net"
@@ -174,7 +270,7 @@
     sudo: yes
     tags: ["dns", "mysql"]
 
-- name: PostgreSQL
+- name: postgresql
   hosts: "repository"
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
@@ -182,7 +278,6 @@
     POSTGRES_PASSWORD: user_pass
     SONARQUBE_JDBC_USERNAME: sonar
     SONARQUBE_JDBC_PASSWORD: sonar
-  sudo: yes
   roles:
   - { role: docker-postgresql, tags: ["postgresql"] }
 - hosts: "net"
@@ -195,18 +290,103 @@
     sudo: yes
     tags: ["dns", "postgresql"]
 
-#- name: Gitlab
-#  hosts: "ci"
-#  environment:
-#    INFRASTRUCTURE: "{{ infrastructure }}"
-#  sudo: yes
-#  roles:
-#  - { role: docker-gitlab, tags: ["gitlab"] }
-#
-#- name: Jenkins
-#  hosts: "ci"
-#  environment:
-#    INFRASTRUCTURE: "{{ infrastructure }}"
-#  sudo: yes
-#  roles:
-#  - { role: docker-jenkins, tags: ["jenkins"] }
+- name: cloudbus
+  hosts: "repository"
+  vars:
+    git_repo: https://github.com/home1-oss/docker-cloudbus.git
+    git_dest: /tmp/docker-cloudbus
+    #file: rabbitmq-management/docker-compose.yml
+    file: docker-compose.yml
+    pull: yes
+  environment:
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    SPRING_RABBITMQ_USERNAME: user
+    SPRING_RABBITMQ_PASSWORD: user_pass
+  roles:
+  - { role: docker-compose, tags: ["cloudbus"] }
+- hosts: "net"
+  tasks:
+  - name: DNS record of cloudbus
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} cloudbus A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} cloudbus A 172.22.101.10"
+    sudo: yes
+    tags: ["dns", "cloudbus"]
+
+
+- name: sonarqube
+  hosts: "ci"
+  vars:
+    git_repo: https://github.com/home1-oss/docker-sonarqube.git
+    git_dest: /tmp/docker-sonarqube
+    file: rabbitmq-management/docker-compose.yml
+    pull: yes
+  environment:
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    SONARQUBE_JDBC_URL: "jdbc:postgresql://postgresql.{{ INFRASTRUCTURE }}:5432/sonar"
+    SONARQUBE_JDBC_USERNAME: sonar
+    SONARQUBE_JDBC_PASSWORD: sonar
+  roles:
+  - { role: docker-compose, tags: ["sonarqube"] }
+- hosts: "net"
+  tasks:
+  - name: DNS record of sonarqube
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} sonarqube A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} sonarqube A 172.22.101.10"
+    sudo: yes
+    tags: ["dns", "sonarqube"]
+
+- name: gitlab
+  hosts: "ci"
+  vars:
+    git_repo: https://github.com/home1-oss/docker-gitlab.git
+    git_dest: /tmp/docker-gitlab
+    file: gitlab/docker-compose.yml
+    pull: yes
+  environment:
+    CONFIGSERVER_WEBHOOK_ENDPOINT: http://configserver.internal:8888/monitor
+    GITLAB_ROOT_PASSWORD: user_pass
+    GITLAB_SHELL_SSH_PORT: 20022
+    GIT_ADMIN_USERNAME: user
+    GIT_DEPLOY_KEY: /app/gitlab/data/default_deploy_key.pub
+    GIT_HTTP_PORT: 10080
+    GIT_WORKSPACE: /app/gitlab/data/workspace
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    SKIP_AUTO_REPO_INIT: false
+  sudo: yes
+  roles:
+  - { role: docker-compose, tags: ["gitlab"] }
+- hosts: "net"
+  tasks:
+  - name: DNS record of gitlab
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} gitlab A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} gitlab A 172.22.101.10"
+    sudo: yes
+    tags: ["dns", "gitlab"]
+
+- name: jenkins
+  hosts: "ci"
+  vars:
+    git_repo: https://github.com/home1-oss/docker-jenkins.git
+    git_dest: /tmp/docker-jenkins
+    file: jenkins/docker-compose.yml
+    pull: yes
+  environment:
+    INFRASTRUCTURE: "{{ infrastructure }}"
+  sudo: yes
+  roles:
+  - { role: docker-compose, tags: ["jenkins"] }
+- hosts: "net"
+  tasks:
+  - name: DNS record of jenkins
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} jenkins A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} jenkins A 172.22.101.10"
+    sudo: yes
+    tags: ["dns", "jenkins"]

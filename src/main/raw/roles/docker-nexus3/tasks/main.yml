@@ -12,30 +12,5 @@
     build: no
     files: docker-compose.yml
     project_src: /tmp/docker-nexus3
-    pull: yes
-    remove_volumes: no
-
-
-- name: git clone https://github.com/home1-oss/docker-proxy.git
-  git:
-    repo: https://github.com/home1-oss/docker-proxy.git
-    dest: /tmp/docker-proxy
-    force: yes
-    update: yes
-    version: "{{ branch }}"
-
-- name: docker-compose up docker-proxy/docker-compose-mirror.yml
-  docker_service:
-    build: no
-    files: docker-compose-mirror.yml
-    project_src: /tmp/docker-proxy
-    pull: yes
-    remove_volumes: no
-
-- name: docker-compose up docker-proxy/docker-compose-registry.yml
-  docker_service:
-    build: no
-    files: docker-compose-registry.yml
-    project_src: /tmp/docker-proxy
-    pull: yes
+#    pull: yes
     remove_volumes: no
