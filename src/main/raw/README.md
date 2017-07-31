@@ -7,9 +7,12 @@ home1-oss infrastructure on raw machines cluster.
 vagrant up
 ansible-galaxy install -v --force -r requirements.yml
 # start all
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml -e "create_oss_network=True infrastructure=internal proxy=socks5://127.0.0.1:1080"
+ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+    -e "create_oss_network=True branch=develop infrastructure=internal forwarders=10.0.2.3 proxy=socks5://127.0.0.1:1080"
 # or start specific services
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "dns,privoxy,ldap,nexus3,mysql,postgresql" -e "create_oss_network=True branch=develop infrastructure=internal forwarders=10.0.2.3 proxy=socks5://127.0.0.1:1080"
+ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+    --tags "dns,privoxy,ldap,nexus3,mysql,postgresql,cloudbus,sonarqube,gitlab,jenkins" \
+    -e "create_oss_network=True branch=develop infrastructure=internal forwarders=10.0.2.3 proxy=socks5://127.0.0.1:1080"
 ```
 
 ## Destroy

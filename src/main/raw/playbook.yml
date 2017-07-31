@@ -20,11 +20,16 @@
 
 - name: dns
   hosts: "net"
+  vars:
+    git_repo: https://github.com/home1-oss/docker-bind.git
+    git_dest: /tmp/docker-bind
+    file: docker-compose.yml
+    pull: yes
   environment:
     FORWARDERS: "{{ forwarders }}"
     INFRASTRUCTURE: "{{ infrastructure }}"
   roles:
-  - { role: docker-bind, tags: ["dns"] }
+  - { role: docker-compose, tags: ["dns"] }
 
 - name: Setup /etc/resolv.conf
   hosts: ["repository", "ci"]
@@ -41,11 +46,16 @@
 
 - name: privoxy
   hosts: "net"
+  vars:
+    git_repo: https://github.com/home1-oss/docker-privoxy.git
+    git_dest: /tmp/docker-privoxy
+    file: docker-compose.yml
+    pull: yes
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
     SOCKS_PROXY: "{{ proxy }}"
   roles:
-  - { role: docker-privoxy, tags: ["privoxy"] }
+  - { role: docker-compose, tags: ["privoxy"] }
 - hosts: "net"
   tasks:
   - name: DNS record of smart-http-proxy
@@ -89,14 +99,18 @@
 
 - name: gcr.io
   hosts: "repository"
+  vars:
+    git_repo: https://github.com/home1-oss/docker-pull-through-cache.git
+    git_dest: /tmp/docker-pull-through-cache
+    file: docker-compose-mirror-gcr.yml
+    pull: yes
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
     PROXY: "{{ proxy }}"
     PULL_THROUGH_CACHE_OF: https://gcr.io
     PULL_THROUGH_CACHE_PORT: 25004
-    with_items: "{{ role_name }}_anystring"
   roles:
-  - { role: docker-pull-through-cache, tags: ["nexus3"] }
+  - { role: docker-compose, tags: ["nexus3"] }
 - hosts: "net"
   tasks:
   - name: DNS record of gcr.io
@@ -109,6 +123,11 @@
 
 - name: nexus3
   hosts: "repository"
+  vars:
+    git_repo: https://github.com/home1-oss/docker-nexus3.git
+    git_dest: /tmp/docker-nexus3
+    file: docker-compose.yml
+    pull: yes
   environment:
     DOCKER_MIRROR_GCR: http://gcr.io.internal:25004
     INFRASTRUCTURE: "{{ infrastructure }}"
@@ -117,7 +136,7 @@
     NEXUS3_DEPLOYMENT_PASSWORD: deployment
     NEXUS3_PORT: 28081
   roles:
-  - { role: docker-nexus3, tags: ["nexus3"] }
+  - { role: docker-compose, tags: ["nexus3"] }
 - hosts: "net"
   tasks:
   - name: DNS record of nexus3
@@ -252,6 +271,11 @@
 
 - name: mysql
   hosts: "repository"
+  vars:
+    git_repo: https://github.com/home1-oss/docker-mysql.git
+    git_dest: /tmp/docker-mysql
+    file: mysql-5.6/docker-compose.yml
+    pull: yes
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
     MYSQL_ROOT_PASSWORD: root
@@ -259,7 +283,7 @@
     MYSQL_PASSWORD: user_pass
     DB_NAME: db
   roles:
-  - { role: docker-mysql, tags: ["mysql"] }
+  - { role: docker-compose, tags: ["mysql"] }
 - hosts: "net"
   tasks:
   - name: DNS record of mysql
@@ -272,6 +296,11 @@
 
 - name: postgresql
   hosts: "repository"
+  vars:
+    git_repo: https://github.com/home1-oss/docker-postgresql.git
+    git_dest: /tmp/docker-postgresql
+    file: docker-compose.yml
+    pull: yes
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
     POSTGRES_USER: user
@@ -279,7 +308,7 @@
     SONARQUBE_JDBC_USERNAME: sonar
     SONARQUBE_JDBC_PASSWORD: sonar
   roles:
-  - { role: docker-postgresql, tags: ["postgresql"] }
+  - { role: docker-compose, tags: ["postgresql"] }
 - hosts: "net"
   tasks:
   - name: DNS record of postgresql
@@ -320,7 +349,7 @@
   vars:
     git_repo: https://github.com/home1-oss/docker-sonarqube.git
     git_dest: /tmp/docker-sonarqube
-    file: rabbitmq-management/docker-compose.yml
+    file: docker-compose.yml
     pull: yes
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"

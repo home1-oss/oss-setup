@@ -1,5 +1,5 @@
 ---
-- name: git clone {{ repo }}
+- name: git clone {{ git_repo }}
   git:
     repo: "{{ git_repo }}"
     dest: "{{ git_dest }}"
@@ -7,10 +7,10 @@
     update: yes
     version: "{{ branch }}"
 
-- name: "docker-compose up docker-proxy/{{ file }}"
+- name: docker-compose up {{ file }}
   docker_service:
-    build: "{{ build | default(no) }}"
-    files: "{{ file | default(docker-compose.yml) }}"
+    build: "{{ build | default('no') }}"
+    files: "{{ file | default('docker-compose.yml') }}"
     project_src: "{{ git_dest }}"
-    pull: "{{ pull | default(yes) }}"
-    remove_volumes: "{{ remove_volumes | default(no) }}"
+    pull: "{{ pull | default('yes') }}"
+    remove_volumes: "{{ remove_volumes | default('no') }}"

@@ -12,5 +12,5 @@
     build: no
     files: "{{ file }}"
     project_src: /tmp/docker-proxy
-#    pull: yes
+    pull: yes
     remove_volumes: no
