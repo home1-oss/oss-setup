@@ -30,6 +30,15 @@
     INFRASTRUCTURE: "{{ infrastructure }}"
   roles:
   - { role: docker-compose, tags: ["dns"] }
+- hosts: "net"
+  tasks:
+  - name: DNS record of bind
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} bind A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} bind A 172.22.101.5"
+    sudo: yes
+    tags: ["dns"]
 
 - name: Setup /etc/resolv.conf
   hosts: ["repository", "ci"]
@@ -378,6 +387,26 @@
     - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} sonarqube A 172.22.101.15"
     sudo: yes
     tags: ["dns", "sonarqube"]
+- name: sonar
+  hosts: "repository"
+  vars:
+    file: docker-compose-sonar.yml
+  environment:
+    BACKEND_DOMAIN: sonarqube
+    BACKEND_PORT: 9000
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    SERVER_DOMAIN: sonar
+  roles:
+  - { role: docker-proxy, tags: ["sonarqube"] }
+- hosts: "net"
+  tasks:
+  - name: DNS record of sonar
+    shell: "{{ item }}"
+    with_items:
+    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} sonar A"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} sonar A 172.22.101.10"
+    sudo: yes
+    tags: ["dns", "sonarqube"]
 
 - name: gitlab
   hosts: "ci"
@@ -413,7 +442,7 @@
   vars:
     file: docker-compose-git.yml
   environment:
-    BACKEND_DOMAIN: nexus3
+    BACKEND_DOMAIN: gitlab
     BACKEND_PORT: 10080
     INFRASTRUCTURE: "{{ infrastructure }}"
     SERVER_DOMAIN: git
@@ -425,7 +454,7 @@
     shell: "{{ item }}"
     with_items:
     - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} git A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} git A 172.22.101.15"
+    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} git A 172.22.101.10"
     sudo: yes
     tags: ["dns", "gitlab"]
 
