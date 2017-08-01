@@ -9,8 +9,8 @@
 
 - name: docker-compose up {{ file }}
   docker_service:
-    build: "{{ build | default(False) }}"
+    build: no # "{{ build | default(False) }}"
     files: "{{ file | default('docker-compose.yml') }}"
     project_src: "{{ git_dest }}"
-    pull: "{{ pull | default(True) }}"
+    pull: yes #"{{ pull | default(True) }}"
     remove_volumes: "{{ remove_volumes | default(False) }}"

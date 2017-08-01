@@ -1,18 +1,29 @@
 ---
 - name: Installing and configuring Docker
   hosts: all
+  vars:
+    create_oss_network: yes
+    install_docker_compose: yes
+    install_docker_machine: yes
   roles:
   - { role: home1-oss.oss-docker-install, tags: ["docker"] }
 
-#- name: Installing and configuring Docker
-#  hosts: all
-#  roles:
-#  - { role: docker, tags: ["docker"] }
+- name: Docker config
+  hosts: ["net", "repository"]
+  vars:
+    docker_registry_mirrors:
+    - http://hub-mirror.c.163.com
+  roles:
+    - { role: home1-oss.oss-docker-config, tags: ["always"] }
 
 - name: clean up
   hosts: all
   tasks:
-  - shell: docker images | grep none | awk '{print $3}' | xargs docker rmi; docker rmi $(docker images -f "dangling=true" -q); docker volume rm $(docker volume ls -qf dangling=true)
+  - shell: "{{ item }}"
+    with_items:
+    #- "docker images | grep none | awk '{print $3}' | xargs docker rmi"
+    #- "docker images -f 'dangling=true' -q | xargs docker rmi"
+    - "docker volume ls -qf dangling=true | xargs docker volume rm"
     ignore_errors: true
     sudo: yes
     tags:
@@ -24,27 +35,24 @@
     git_repo: https://github.com/home1-oss/docker-bind.git
     git_dest: /tmp/docker-bind
     file: docker-compose.yml
-    pull: yes
+    #pull: yes
   environment:
     FORWARDERS: "{{ forwarders }}"
     INFRASTRUCTURE: "{{ infrastructure }}"
   roles:
   - { role: docker-compose, tags: ["dns"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of bind
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} bind A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} bind A 172.22.101.5"
-    sudo: yes
-    tags: ["dns"]
+  vars:
+    service: bind
+    service_ip: "{{ hostvars['net']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns"] }
 
 - name: Setup /etc/resolv.conf
   hosts: ["repository", "ci"]
   vars:
     resolv_conf_nameservers:
-    - 172.22.101.5
+    - "{{ hostvars['net']['ansible_ssh_host'] }}"
     - "{{ forwarders }}"
     - 8.8.4.4
     - 8.8.8.8
@@ -59,51 +67,60 @@
     git_repo: https://github.com/home1-oss/docker-privoxy.git
     git_dest: /tmp/docker-privoxy
     file: docker-compose.yml
-    pull: yes
+    #pull: yes
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
     SOCKS_PROXY: "{{ proxy }}"
   roles:
   - { role: docker-compose, tags: ["privoxy"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of smart-http-proxy
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} http-to-socks A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} http-to-socks A 172.22.101.5"
-    sudo: yes
-    tags: ["dns"]
-  - name: DNS record of http-to-socks
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} smart-http-proxy A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} smart-http-proxy A 172.22.101.5"
-    sudo: yes
-    tags: ["dns", "privoxy"]
+  vars:
+    service: http-to-socks
+    service_ip: "{{ hostvars['net']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "privoxy"] }
+- hosts: "net"
+  vars:
+    service: smart-http-proxy
+    service_ip: "{{ hostvars['net']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "privoxy"] }
 
-- name: LDAP
+
+- name: openldap
   hosts: "net"
+  vars:
+    git_repo: https://github.com/home1-oss/docker-openldap.git
+    git_dest: /tmp/docker-openldap
+    file: openldap/docker-compose.yml
+    #pull: yes
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
   roles:
-  - { role: docker-openldap, tags: ["ldap"] }
+  - { role: docker-compose, tags: ["ldap"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of ldap
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} ldap A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} ldap A 172.22.101.5"
-    sudo: yes
-    tags: ["dns"]
-  - name: DNS record of phpldapadmin
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} phpldapadmin A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} phpldapadmin A 172.22.101.5"
-    sudo: yes
-    tags: ["dns", "ldap"]
+  vars:
+    service: ldap
+    service_ip: "{{ hostvars['net']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "ldap"] }
+- name: phpldapadmin
+  hosts: "net"
+  vars:
+    git_repo: https://github.com/home1-oss/docker-openldap.git
+    git_dest: /tmp/docker-openldap
+    file: phpldapadmin/docker-compose.yml
+    #pull: yes
+  environment:
+    INFRASTRUCTURE: "{{ infrastructure }}"
+  roles:
+  - { role: docker-compose, tags: ["ldap"] }
+- hosts: "net"
+  vars:
+    service: phpldapadmin
+    service_ip: "{{ hostvars['net']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "ldap"] }
 
 
 - name: gcr.io
@@ -112,7 +129,7 @@
     git_repo: https://github.com/home1-oss/docker-pull-through-cache.git
     git_dest: /tmp/docker-pull-through-cache
     file: docker-compose-mirror-gcr.yml
-    pull: yes
+    #pull: yes
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
     PROXY: "{{ proxy }}"
@@ -121,14 +138,11 @@
   roles:
   - { role: docker-compose, tags: ["nexus3"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of gcr.io
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} gcr.io A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} gcr.io A 172.22.101.10"
-    sudo: yes
-    tags: ["dns", "nexus3"]
+  vars:
+    service: gcr.io
+    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: nexus3
   hosts: "repository"
@@ -136,7 +150,7 @@
     git_repo: https://github.com/home1-oss/docker-nexus3.git
     git_dest: /tmp/docker-nexus3
     file: docker-compose.yml
-    pull: yes
+    #pull: yes
   environment:
     DOCKER_MIRROR_GCR: http://gcr.io.internal:25004
     INFRASTRUCTURE: "{{ infrastructure }}"
@@ -147,14 +161,11 @@
   roles:
   - { role: docker-compose, tags: ["nexus3"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of nexus3
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} nexus3 A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} nexus3 A 172.22.101.10"
-    sudo: yes
-    tags: ["dns", "nexus3"]
+  vars:
+    service: nexus3
+    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: fileserver
   hosts: "repository"
@@ -168,14 +179,11 @@
   roles:
   - { role: docker-proxy, tags: ["nexus3"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of fileserver
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} fileserver A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} fileserver A 172.22.101.10"
-    sudo: yes
-    tags: ["dns", "nexus3"]
+  vars:
+    service: fileserver
+    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: mirror.docker
   hosts: "repository"
@@ -189,14 +197,11 @@
   roles:
   - { role: docker-proxy, tags: ["nexus3"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of mirror.docker
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} mirror.docker A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} mirror.docker A 172.22.101.10"
-    sudo: yes
-    tags: ["dns", "nexus3"]
+  vars:
+    service: mirror.docker
+    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: mvnsite
   hosts: "repository"
@@ -210,14 +215,11 @@
   roles:
   - { role: docker-proxy, tags: ["nexus3"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of mvnsite
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} mvnsite A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} mvnsite A 172.22.101.10"
-    sudo: yes
-    tags: ["dns", "nexus3"]
+  vars:
+    service: mvnsite
+    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: nexus
   hosts: "repository"
@@ -229,14 +231,11 @@
   roles:
   - { role: docker-proxy, tags: ["nexus3"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of nexus
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} nexus A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} nexus A 172.22.101.10"
-    sudo: yes
-    tags: ["dns", "nexus3"]
+  vars:
+    service: nexus
+    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: registry.docker
   hosts: "repository"
@@ -250,14 +249,11 @@
   roles:
   - { role: docker-proxy, tags: ["nexus3"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of registry.docker
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} registry.docker A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} registry.docker A 172.22.101.10"
-    sudo: yes
-    tags: ["dns", "nexus3"]
+  vars:
+    service: registry.docker
+    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: docker-proxy
   hosts: "repository"
@@ -269,14 +265,11 @@
   roles:
   - { role: docker-proxy, tags: ["nexus3"] }
 #- hosts: "net"
-#  tasks:
-#  - name: DNS record of docker-proxy
-#    shell: "{{ item }}"
-#    with_items:
-#    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} docker-proxy A"
-#    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} docker-proxy A 172.22.101.10"
-#    sudo: yes
-#    tags: ["dns", "nexus3"]
+#  vars:
+#    service: docker-proxy
+#    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
+#  roles:
+#  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: mysql
   hosts: "repository"
@@ -284,7 +277,7 @@
     git_repo: https://github.com/home1-oss/docker-mysql.git
     git_dest: /tmp/docker-mysql
     file: mysql-5.6/docker-compose.yml
-    pull: yes
+    #pull: yes
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
     MYSQL_ROOT_PASSWORD: root
@@ -294,14 +287,11 @@
   roles:
   - { role: docker-compose, tags: ["mysql"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of mysql
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} mysql A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} mysql A 172.22.101.10"
-    sudo: yes
-    tags: ["dns", "mysql"]
+  vars:
+    service: mysql
+    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "mysql"] }
 
 - name: postgresql
   hosts: "repository"
@@ -309,7 +299,7 @@
     git_repo: https://github.com/home1-oss/docker-postgresql.git
     git_dest: /tmp/docker-postgresql
     file: docker-compose.yml
-    pull: yes
+    #pull: yes
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
     POSTGRES_USER: user
@@ -319,14 +309,11 @@
   roles:
   - { role: docker-compose, tags: ["postgresql"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of postgresql
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} postgresql A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} postgresql A 172.22.101.10"
-    sudo: yes
-    tags: ["dns", "postgresql"]
+  vars:
+    service: postgresql
+    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "postgresql"] }
 
 - name: cloudbus
   hosts: "repository"
@@ -335,7 +322,7 @@
     git_dest: /tmp/docker-cloudbus
     #file: rabbitmq-management/docker-compose.yml
     file: docker-compose.yml
-    pull: yes
+    #pull: yes
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
     SPRING_RABBITMQ_USERNAME: user
@@ -343,26 +330,24 @@
   roles:
   - { role: docker-compose, tags: ["cloudbus"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of cloudbus
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} cloudbus A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} cloudbus A 172.22.101.10"
-    sudo: yes
-    tags: ["dns", "cloudbus"]
+  vars:
+    service: cloudbus
+    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "cloudbus"] }
+
 
 - name: Docker config
   hosts: ["ci"]
-  sudo: yes
+  vars:
+    docker_insecure_registries:
+    - registry.docker.internal:80
+    - mirror.docker.internal:80
+    - gcr.io.internal:25004
+    docker_registry_mirrors:
+    - http://mirror.docker.internal:80
   roles:
     - { role: home1-oss.oss-docker-config, tags: ["docker-config"] }
-#- name: Docker config
-#  hosts: all
-#  sudo: yes
-#  roles:
-#    - { role: oss-docker-config, tags: ["docker-config"] }
-
 
 - name: sonarqube
   hosts: "ci"
@@ -370,7 +355,7 @@
     git_repo: https://github.com/home1-oss/docker-sonarqube.git
     git_dest: /tmp/docker-sonarqube
     file: docker-compose.yml
-    pull: yes
+    #pull: yes
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
     SONARQUBE_JDBC_URL: "jdbc:postgresql://postgresql.{{ INFRASTRUCTURE }}:5432/sonar"
@@ -379,14 +364,11 @@
   roles:
   - { role: docker-compose, tags: ["sonarqube"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of sonarqube
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} sonarqube A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} sonarqube A 172.22.101.15"
-    sudo: yes
-    tags: ["dns", "sonarqube"]
+  vars:
+    service: sonarqube
+    service_ip: "{{ hostvars['ci']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "sonarqube"] }
 - name: sonar
   hosts: "repository"
   vars:
@@ -399,14 +381,11 @@
   roles:
   - { role: docker-proxy, tags: ["sonarqube"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of sonar
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} sonar A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} sonar A 172.22.101.10"
-    sudo: yes
-    tags: ["dns", "sonarqube"]
+  vars:
+    service: sonar
+    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "sonarqube"] }
 
 - name: gitlab
   hosts: "ci"
@@ -414,7 +393,7 @@
     git_repo: https://github.com/home1-oss/docker-gitlab.git
     git_dest: /tmp/docker-gitlab
     file: gitlab/docker-compose.yml
-    pull: yes
+    #pull: yes
   environment:
     CONFIGSERVER_WEBHOOK_ENDPOINT: http://configserver.internal:8888/monitor
     GITLAB_ROOT_PASSWORD: user_pass
@@ -429,14 +408,11 @@
   roles:
   - { role: docker-compose, tags: ["gitlab"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of gitlab
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} gitlab A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} gitlab A 172.22.101.15"
-    sudo: yes
-    tags: ["dns", "gitlab"]
+  vars:
+    service: gitlab
+    service_ip: "{{ hostvars['ci']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "gitlab"] }
 - name: git
   hosts: "repository"
   vars:
@@ -449,14 +425,11 @@
   roles:
   - { role: docker-proxy, tags: ["gitlab"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of git
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} git A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} git A 172.22.101.10"
-    sudo: yes
-    tags: ["dns", "gitlab"]
+  vars:
+    service: git
+    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "gitlab"] }
 
 - name: jenkins
   hosts: "ci"
@@ -464,18 +437,15 @@
     git_repo: https://github.com/home1-oss/docker-jenkins.git
     git_dest: /tmp/docker-jenkins
     file: jenkins/docker-compose.yml
-    pull: yes
+    #pull: yes
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
   sudo: yes
   roles:
   - { role: docker-compose, tags: ["jenkins"] }
 - hosts: "net"
-  tasks:
-  - name: DNS record of jenkins
-    shell: "{{ item }}"
-    with_items:
-    - "docker exec bind.{{ infrastructure }} recorddel {{ infrastructure }} jenkins A"
-    - "docker exec bind.{{ infrastructure }} recordadd {{ infrastructure }} jenkins A 172.22.101.15"
-    sudo: yes
-    tags: ["dns", "jenkins"]
+  vars:
+    service: jenkins
+    service_ip: "{{ hostvars['ci']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "jenkins"] }

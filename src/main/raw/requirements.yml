@@ -1,3 +1,4 @@
 ---
 - name: home1-oss.oss-docker-install
+- name: home1-oss.oss-docker-config
 - name: kbrebanov.resolv_conf
