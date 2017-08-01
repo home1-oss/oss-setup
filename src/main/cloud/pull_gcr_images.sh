@@ -46,8 +46,8 @@ if [ -z "${from}" ]; then from="registries"; fi
 
 REGISTRIES=()
 if [ "${from}" == "registries" ]; then
-    REGISTRIES+=('172.22.101.10:25004')
-    REGISTRIES+=('172.22.101.10:25001')
+    REGISTRIES+=('gcr.io.internal:25004')
+    REGISTRIES+=('mirror.docker.internal')
 else
     REGISTRIES+=('')
 fi

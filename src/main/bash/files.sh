@@ -86,7 +86,8 @@ done
 
 
 if [ -z "${BUILD_FILESERVER}" ]; then
-    BUILD_FILESERVER="http://fileserver.internal:28081/nexus/repository/files"
+    #BUILD_FILESERVER="http://fileserver.internal:28081/nexus/repository/files"
+    BUILD_FILESERVER="http://fileserver.internal"
 fi
 FOUND_FILES=($(find ${DOWNLOAD_CACHE} -type f | grep -Ev ".checksum$"))
 for found_file in "${FOUND_FILES[@]}"; do
