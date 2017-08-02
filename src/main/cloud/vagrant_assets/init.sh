@@ -73,11 +73,10 @@ if type -p lsb_release > /dev/null; then
         sudo sed -i 's#http://archive.ubuntu.com/ubuntu#http://mirrors.163.com/ubuntu#g' /etc/apt/sources.list
         sudo sed -i 's#http://security.ubuntu.com/ubuntu#http://mirrors.163.com/ubuntu#g' /etc/apt/sources.list
         sudo apt-get update --fix-missing
+        sudo apt-get clean -y
         sudo rm -vrf /var/lib/apt/lists/*
         sudo mkdir /var/lib/apt/lists/partial
-        sudo apt-get clean -y
-        #sudo apt-get update -o Acquire::No-Cache=True
-        #sudo apt-get update -o Acquire::BrokenProxe=True
+        #sudo apt-get update -o Acquire::No-Cache=True -o Acquire::BrokenProxe=True
 
         if [ "${codename}" == "xenial" ]; then
             sudo apt-get update -y || sudo apt-get update -y
