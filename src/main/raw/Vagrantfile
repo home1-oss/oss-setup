@@ -26,8 +26,8 @@ Vagrant.configure(2) do |config|
       net.vm.hostname = 'net'
 
       net.vm.network "forwarded_port", guest: 22, host: 60005, auto_correct: true
-      net.vm.network "private_network", ip: "172.22.101.5", netmask: "255.255.255.0", nic_type: "82545EM"
-      net.vm.network "public_network", ip: "192.168.199.5", netmask: "255.255.255.0", nic_type: "82545EM"
+      net.vm.network "private_network", adapter: 2, ip: "172.22.101.5", netmask: "255.255.255.0", nic_type: "82545EM"
+      net.vm.network "public_network", adapter: 3, ip: "192.168.199.5", netmask: "255.255.255.0", nic_type: "82545EM"
       #net.vm.provision "shell", run: "always", inline: "ifconfig eth2 192.168.199.5 netmask 255.255.255.0 up"
       # see: https://en.wikipedia.org/wiki/Unique_local_address
       #net.vm.provision "shell", run: "always", inline: "ifconfig eth2 inet6 add fc00::17/7"
@@ -43,8 +43,8 @@ Vagrant.configure(2) do |config|
       repository.vm.hostname = 'repository'
 
       repository.vm.network "forwarded_port", guest: 22, host: 60010, auto_correct: true
-      repository.vm.network "private_network", ip: "172.22.101.10", netmask: "255.255.255.0", nic_type: "82545EM"
-      repository.vm.network "public_network", ip: "192.168.199.10", netmask: "255.255.255.0", nic_type: "82545EM"
+      repository.vm.network "private_network", adapter: 2, ip: "172.22.101.10", netmask: "255.255.255.0", nic_type: "82545EM"
+      repository.vm.network "public_network", adapter: 3, ip: "192.168.199.10", netmask: "255.255.255.0", nic_type: "82545EM"
       #repository.vm.provision "shell", run: "always", inline: "ifconfig eth2 192.168.199.10 netmask 255.255.255.0 up"
       #repository.vm.provision "shell", run: "always", inline: "ifconfig eth2 inet6 add fc00::17/7"
 
@@ -59,8 +59,8 @@ Vagrant.configure(2) do |config|
       ci.vm.hostname = 'ci'
 
       ci.vm.network "forwarded_port", guest: 22, host: 60015, auto_correct: true
-      ci.vm.network "private_network", ip: "172.22.101.15", netmask: "255.255.255.0", nic_type: "82545EM"
-      ci.vm.network "public_network", ip: "192.168.199.15", netmask: "255.255.255.0", nic_type: "82545EM"
+      ci.vm.network "private_network", adapter: 2, ip: "172.22.101.15", netmask: "255.255.255.0", nic_type: "82545EM"
+      ci.vm.network "public_network", adapter: 3, ip: "192.168.199.15", netmask: "255.255.255.0", nic_type: "82545EM"
       #ci.vm.provision "shell", run: "always", inline: "ifconfig eth2 192.168.199.15 netmask 255.255.255.0 up"
       #ci.vm.provision "shell", run: "always", inline: "ifconfig eth2 inet6 add fc00::17/7"
 
