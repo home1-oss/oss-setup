@@ -1,5 +1,13 @@
-[Cloud]
-rancherserver ansible_ssh_port=22 ansible_ssh_host=172.22.101.100
+[raw]
+net ansible_ssh_port=22 ansible_ssh_host=192.168.199.5
+repository ansible_ssh_port=22 ansible_ssh_host=192.168.199.10
+ci ansible_ssh_port=22 ansible_ssh_host=192.168.199.15
+
+[cloud]
+rancherserver ansible_ssh_port=22 ansible_ssh_host=192.168.199.100
+rancherhost1
+rancherhost2
+rancherhost3
 
 [hosts:children]
 rancherhost1
@@ -7,10 +15,10 @@ rancherhost2
 rancherhost3
 
 [rancherhost1]
-rancherhost1 ansible_ssh_port=22 ansible_ssh_host=172.22.101.101
+rancherhost1 ansible_ssh_port=22 ansible_ssh_host=192.168.199.101
 
 [rancherhost2]
-rancherhost2 ansible_ssh_port=22 ansible_ssh_host=172.22.101.102
+rancherhost2 ansible_ssh_port=22 ansible_ssh_host=192.168.199.102
 
 [rancherhost3]
-rancherhost3 ansible_ssh_port=22 ansible_ssh_host=172.22.101.103
+rancherhost3 ansible_ssh_port=22 ansible_ssh_host=192.168.199.103
