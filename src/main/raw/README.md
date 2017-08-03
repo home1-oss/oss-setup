@@ -15,9 +15,21 @@ ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_p
     -e "create_oss_network=True branch=develop infrastructure=internal forwarders=<e.g. 10.0.2.3> proxy=<e.g. socks5://127.0.0.1:1080>"
 ```
 
+## Check proxy
+
+- Test proxy to https://gcr.io/v2/
+`http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119 curl -SL https://gcr.io`
+
 Clear the DNS cache in macOS Sierra
 ```sh
 sudo killall -HUP mDNSResponder
+```
+
+- Re-config proxy only
+```sh
+ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+    --tags "privoxy" \
+    -e "branch=develop infrastructure=internal proxy=<e.g. socks5://127.0.0.1:1080>"
 ```
 
 ## Services

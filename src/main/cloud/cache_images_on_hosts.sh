@@ -3,9 +3,9 @@
 #cat pull_gcr_images.sh | ssh -F /tmp/ssh-config-rancherhost1 root@rancherhost1
 
 HOSTS=()
-HOSTS+=('172.22.101.101')
-HOSTS+=('172.22.101.102')
-HOSTS+=('172.22.101.103')
+HOSTS+=('192.168.199.101')
+HOSTS+=('192.168.199.102')
+HOSTS+=('192.168.199.103')
 
 for host in ${HOSTS[@]}; do
     echo "host: ${host}"

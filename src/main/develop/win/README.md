@@ -16,7 +16,7 @@ docker-machine ssh default -t sudo vi /var/lib/boot2docker/profile
 # Add something like:
 #     EXTRA_ARGS="--default-ulimit core=-1"
 docker-machine restart default
-docker-machine ssh default "echo $'EXTRA_ARGS=\"--registry-mirror=http://172.22.101.10:25001 --insecure-registry 172.22.101.10:25001 --insecure-registry 172.22.101.10:25004\"' | sudo tee -a /var/lib/boot2docker/profile && sudo /etc/init.d/docker restart"
+docker-machine ssh default "echo $'EXTRA_ARGS=\"--registry-mirror=http://mirror.docker.internal --insecure-registry mirror.docker.internal --insecure-registry registry.docker.internal --insecure-registry gcr.io.internal:25004\"' | sudo tee -a /var/lib/boot2docker/profile && sudo /etc/init.d/docker restart"
 
 choco install docker-machine docker-compose -y
 

@@ -42,7 +42,7 @@
   - { role: rancher_server, tags: ["rancher_server"] }
 - hosts: "net"
   vars:
-    service: bind
+    service: rancherserver
     service_ip: "{{ hostvars['net']['ansible_ssh_host'] }}"
     roles:
     - { role: oss-dns-record, tags: ["dns"] }
