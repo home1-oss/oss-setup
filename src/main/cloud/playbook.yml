@@ -43,9 +43,9 @@
 - hosts: "net"
   vars:
     service: rancherserver
-    service_ip: "{{ hostvars['net']['ansible_ssh_host'] }}"
-    roles:
-    - { role: oss-dns-record, tags: ["dns"] }
+    service_ip: "{{ hostvars['rancherserver']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns", "rancher_server"] }
 
 - name: Register Rancher Hosts
   hosts: "{{ hosts | default('hosts') }}"

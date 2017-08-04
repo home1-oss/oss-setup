@@ -21,7 +21,8 @@ vagrant up
 
 ```sh
 ansible-galaxy install -v --force -r requirements.yml
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml
+ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+    -e "infrastructure=internal http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119"
 ```
 
 ## Re-config docker
@@ -49,7 +50,7 @@ see: [Private Registry with Kubernetes in Rancher](http://rancher.com/docs/ranch
 ansible-galaxy install -v --force -r requirements.yml
 ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
     --tags "docker,docker-config,rancher_server" \
-    -e "http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119"
+    -e "infrastructure=internal http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119"
 
 # bind hosts '192.168.199.100 rancherserver.internal'
 mkdir -p ~/.oss
@@ -106,7 +107,7 @@ rancher env ls
 ADDING REGISTRIES
 1. Select Kubernetes environment (env-k8s-vxlan-oss-internal)
 2. Under INFRASTRUCTURE -> Registries
-3. Add registry: mirror.docker.internal
+3. Add registry: mirror.docker.internal:80
 
 CHANGING THE DEFAULT REGISTRY
 1. Under Admin -> Setting -> Advanced Settings
