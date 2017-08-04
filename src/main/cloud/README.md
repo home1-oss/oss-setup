@@ -24,6 +24,14 @@ ansible-galaxy install -v --force -r requirements.yml
 ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml
 ```
 
+## Re-config docker
+
+```sh
+ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+    --tags "docker-config" \
+    -e "http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119"
+```
+
 ## Run k8s
 
 > When using kubelet, gcr.io is not available from china，
@@ -39,7 +47,9 @@ see: [Private Registry with Kubernetes in Rancher](http://rancher.com/docs/ranch
 
 ```sh
 ansible-galaxy install -v --force -r requirements.yml
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "docker,docker-config,rancher_server" -e "http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119"
+ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+    --tags "docker,docker-config,rancher_server" \
+    -e "http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119"
 
 # bind hosts '192.168.199.100 rancherserver.internal'
 mkdir -p ~/.oss
@@ -104,7 +114,9 @@ CHANGING THE DEFAULT REGISTRY
 3. Add the registry value and click on Save.
 
 ```
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml --tags "rancher_reg" -e "rancher_project_name=env-k8s-vxlan-oss-internal"
+ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+    --tags "rancher_reg" \
+    -e "rancher_project_name=env-k8s-vxlan-oss-internal"
 ```
 
 - Enable access VXLAN (packet forward through VXLAN between hosts)

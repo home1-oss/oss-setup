@@ -2,8 +2,8 @@
 rancher_port: "80"
 
 docker_insecure_registries:
-- registry.docker.internal
-- mirror.docker.internal
+- registry.docker.internal:80
+- mirror.docker.internal:80
 - gcr.io.internal:25004
 
 docker_registry_mirrors:

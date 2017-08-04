@@ -7,12 +7,14 @@ HOSTS+=('192.168.199.101')
 HOSTS+=('192.168.199.102')
 HOSTS+=('192.168.199.103')
 
+KEY="~/.vagrant.d/insecure_private_key"
+
 for host in ${HOSTS[@]}; do
     echo "host: ${host}"
 
-    scp pull_gcr_images.sh root@${host}:/tmp/
-    ssh root@${host} '/tmp/pull_gcr_images.sh "origin"'
+    scp -i ${KEY} pull_gcr_images.sh root@${host}:/tmp/
+    ssh -i ${KEY} root@${host} '/tmp/pull_gcr_images.sh "origin"'
 
-    scp pull_rancher_images.sh root@${host}:/tmp/
-    ssh root@${host} '/tmp/pull_rancher_images.sh "origin"'
+    scp -i ${KEY} pull_rancher_images.sh root@${host}:/tmp/
+    ssh -i ${KEY} root@${host} '/tmp/pull_rancher_images.sh "origin"'
 done

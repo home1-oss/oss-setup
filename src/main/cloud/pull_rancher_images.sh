@@ -3,7 +3,7 @@ if ! type -p jq > /dev/null; then
     if type -p apt-get > /dev/null; then
         sudo apt-get update -y; sudo apt-get install -y jq;
     elif type -p yum > /dev/null; then
-        sudo yum install -y jq
+        sudo yum install -y --force-yes jq
     else
         printf 'please install jq manually\n'
         exit 1
