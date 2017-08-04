@@ -65,6 +65,7 @@ append_or_replace "${vagrant_limit_lead}" "${vagrant_limit_tail}" "${TMP}/etc_pa
 sudo touch /etc/pam.d/common-session-noninteractive
 append_or_replace "${vagrant_limit_lead}" "${vagrant_limit_tail}" "${TMP}/etc_pam_d_su" "/etc/pam.d/common-session-noninteractive"
 
+if [ -f /etc/os-release ] && grep CentOS /etc/os-release > /dev/null; then yum install redhat-lsb -y; fi
 
 if type -p lsb_release > /dev/null; then
     id="$(lsb_release -is)"
@@ -82,6 +83,8 @@ if type -p lsb_release > /dev/null; then
             sudo apt-get update -y || sudo apt-get update -y || echo apt-get update failed
             sudo apt-get install -y python
         fi
+    elif [ "${id}" == "CentOS" ]; then
+      sudo yum install net-tools -y
     fi
 fi
 
