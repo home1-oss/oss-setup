@@ -151,6 +151,11 @@ When hosts added and services ready, there will be a 'KUBERNETES' drop down menu
 2. Copy generated content into `~/.kube/config`, may be need to add port in `server: <url>` property.
 
 ```sh
+curl -o /usr/local/bin/kubectl -LO https://storage.googleapis.com/kubernetes-release/release/v1.6.6/bin/darwin/amd64/kubectl
+chmod +x /usr/local/bin/kubectl
+```
+
+```sh
 kubectl get nodes
 kubectl get pods --all-namespaces
 kubectl describe pod <pod_name> --namespace=kube-system
