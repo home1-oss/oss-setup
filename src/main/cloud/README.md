@@ -42,7 +42,7 @@ ansible-playbook -v -i hosts -u root --private-key=${HOME}/.vagrant.d/insecure_p
 
 - Cache images from gcr.io
 see: [Private Registry with Kubernetes in Rancher](http://rancher.com/docs/rancher/v1.6/en/kubernetes/private-registry/)
-`cache_images_on_hosts.sh`
+`cache_images.sh`
 
 - Deactivate Default (cattle) environment `rancher --env Default env deactivate Default`, this step is optional
 
