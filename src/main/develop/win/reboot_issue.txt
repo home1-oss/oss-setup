@@ -1,0 +1,6 @@
+see: https://superuser.com/questions/959567/virtualbox-windows-graceful-shutdown-of-guests-on-host-shutdown
+see: https://superuser.com/questions/957267/how-to-disable-automatic-reboots-in-windows-10/
+
+
+schtasks /change /tn \Microsoft\Windows\UpdateOrchestrator\Reboot /DISABLE
+

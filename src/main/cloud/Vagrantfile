@@ -14,7 +14,7 @@ Vagrant.configure(2) do |config|
 
   #config.ssh.forward_agent = true
   config.ssh.insert_key = false
-  #machine.ssh.username = 'vagrant'
+  #config.ssh.username = 'vagrant'
   #config.ssh.password = 'vagrant'
 
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'" # avoids 'stdin: is not a tty' error.
@@ -49,10 +49,6 @@ Vagrant.configure(2) do |config|
       if machine_id == 1
         machine.vm.box= "ubuntu/xenial64"
         machine.vm.box_url = "ubuntu/xenial64"
-        # see: https://github.com/mitchellh/vagrant/issues/7350
-        machine.vm.provision "shell", inline: <<-SHELL
-         echo "ubuntu:ubuntu" | sudo chpasswd
-        SHELL
       end
       if machine_id == 2
         machine.vm.box= "centos/7"
