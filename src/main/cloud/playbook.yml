@@ -17,23 +17,11 @@
   roles:
   - { role: home1-oss.oss-docker-install, tags: ["docker"] }
 
-#- name: Installing and configuring Docker
-#  hosts: all
-#  sudo: yes
-#  roles:
-#    - { role: oss-docker-install, tags: ["docker"] }
-
 - name: Docker config
   hosts: cloud
   sudo: yes
   roles:
   - { role: home1-oss.oss-docker-config, tags: ["docker-config"] }
-
-#- name: Docker config
-#  hosts: cloud
-#  sudo: yes
-#  roles:
-#    - { role: oss-docker-config, tags: ["docker-config"] }
 
 - name: Setting up Rancher Server
   hosts: "rancherserver"

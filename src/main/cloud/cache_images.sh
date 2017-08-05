@@ -9,12 +9,27 @@ HOSTS+=('192.168.199.103')
 
 KEY="~/.vagrant.d/insecure_private_key"
 
-for host in ${HOSTS[@]}; do
+function cache_images() {
+    local host="$1"
+
     echo "host: ${host}"
 
     scp -i ${KEY} pull_gcr_images.sh root@${host}:/tmp/
+    ssh -i ${KEY} root@${host} '/tmp/pull_gcr_images.sh "mirror.docker.internal"'
     ssh -i ${KEY} root@${host} '/tmp/pull_gcr_images.sh "origin"'
 
     scp -i ${KEY} pull_rancher_images.sh root@${host}:/tmp/
+    ssh -i ${KEY} root@${host} '/tmp/pull_rancher_images.sh "mirror.docker.internal"'
     ssh -i ${KEY} root@${host} '/tmp/pull_rancher_images.sh "origin"'
-done
+
+    # untag mirror.docker.internal/*
+    ssh -i ${KEY} root@${host} "docker images | grep mirror.docker.internal | awk '{print \$1\":\"\$2}' | xargs docker rmi"
+}
+
+if [ ! -z "$1" ]; then
+    cache_images "$1"
+else
+    for host in ${HOSTS[@]}; do
+        cache_images "${host}"
+    done
+fi

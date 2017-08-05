@@ -1,8 +1,6 @@
 # Cloud cluster (rancher, k8s)
 home1-oss services on container cloud cluster.
 
-fatal: [rancherserver]: FAILED! => {"changed": false, "failed": true, "msg": "Failed to validate the SSL certificate for download.docker.com:443. Make sure your managed systems have a valid CA certificate installed. If the website serving the url uses SNI you need python >= 2.7.9 on your managed machine or you can install the `urllib3`, `pyOpenSSL`, `ndg-httpsclient`, and `pyasn1` python modules to perform SNI verification in python >= 2.6. You can use validate_certs=False if you do not need to confirm the servers identity but this is unsafe and not recommended. Paths checked for this platform: /etc/ssl/certs, /etc/pki/ca-trust/extracted/pem, /etc/pki/tls/certs, /usr/share/ca-certificates/cacert.org, /etc/ansible. The exception msg was: [Errno 1] _ssl.c:510: error:14077410:SSL routines:SSL23_GET_SERVER_HELLO:sslv3 alert handshake failure."}
-
 ***Rancher and k8s depends on specific version of docker***
 see:[Supported Docker version](http://docs.rancher.com/rancher/v1.6/en/hosts/#supported-docker-versions)。
 
@@ -19,20 +17,22 @@ see:[Supported Docker version](http://docs.rancher.com/rancher/v1.6/en/hosts/#su
 vagrant up
 ```
 
-## Run rancher
+## Install and config docker
 
 ```sh
 ansible-galaxy install -v --force -r requirements.yml
 ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
-    -e "infrastructure=internal http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119"
+    --tags "docker,docker-config" \
+    -e "fileserver=http://fileserver.internal http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119"
 ```
 
-## Re-config docker
+## Run rancher
 
 ```sh
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
-    --tags "docker-config" \
-    -e "http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119"
+ansible-galaxy install -v --force -r requirements.yml
+ansible-playbook -v -i hosts -u root --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+    --tags "rancher_server,rancher_reg" \
+    -e "infrastructure=internal"
 ```
 
 ## Run k8s
@@ -51,10 +51,10 @@ see: [Private Registry with Kubernetes in Rancher](http://rancher.com/docs/ranch
 ```sh
 ansible-galaxy install -v --force -r requirements.yml
 ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
-    --tags "docker,docker-config,rancher_server" \
-    -e "infrastructure=internal http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119"
+    --tags "rancher_server" \
+    -e "infrastructure=internal"
 
-# bind hosts '192.168.199.100 rancherserver.internal'
+# Set up DNS to 192.168.199.5 or bind hosts '192.168.199.100 rancherserver.internal'
 mkdir -p ~/.oss
 curl 'http://rancherserver.internal/v2-beta/apikey' \
     -H 'content-type: application/json' \
@@ -109,7 +109,7 @@ rancher env ls
 ADDING REGISTRIES
 1. Select Kubernetes environment (env-k8s-vxlan-oss-internal)
 2. Under INFRASTRUCTURE -> Registries
-3. Add registry: mirror.docker.internal:80
+3. Add registry: mirror.docker.internal
 
 CHANGING THE DEFAULT REGISTRY
 1. Under Admin -> Setting -> Advanced Settings
@@ -177,3 +177,29 @@ http://rancher.com/docs/rancher/v1.6/en/rancher-services/networking/#mtu
 
 
 curl ${RANCHER_URL}/v1/projects | prettyjson
+
+## Re-config docker
+
+```sh
+ansible-playbook -v -i hosts -u root --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+    --tags "docker-config" \
+    -e "http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119"
+```
+
+## Ansible SNI/SSL issue
+
+Failed to validate the SSL certificate for download.docker.com:443.
+Make sure your managed systems have a valid CA certificate installed.
+If the website serving the url uses SNI you need python >= 2.7.9 on your managed machine or you can install the
+`urllib3`, `pyOpenSSL`, `ndg-httpsclient`, and `pyasn1` python modules to perform SNI verification in python >= 2.6.
+You can use validate_certs=False if you do not need to confirm the servers identity but this is unsafe and not recommended.
+
+Test
+```sh
+ansible rancherhost3 -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key \
+    -m get_url -a 'url=https://download.docker.com/linux/ubuntu/gpg dest=/tmp'
+```
+
+```sh
+python -c 'import ssl; print(ssl.OPENSSL_VERSION)'
+```

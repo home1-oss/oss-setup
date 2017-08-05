@@ -96,9 +96,10 @@ for found_file in "${FOUND_FILES[@]}"; do
         echo "found_file ${found_file}"
 
         upload_url="${BUILD_FILESERVER}/${upload_path}"
-        upload_url_status=$(curl --head --silent ${upload_url}.checksum | head -n 1 | awk '{print $2}')
-        if [ "404" == "${upload_url_status}" ] || [ "$(cat ${found_file}.checksum)" != "$(curl --silent ${upload_url}.checksum)" ]; then
-            echo "${upload_url_status} upload_url ${upload_url}"
+        file_status=$(curl --head --silent ${upload_url} | head -n 1 | awk '{print $2}')
+        checksum_status=$(curl --head --silent ${upload_url}.checksum | head -n 1 | awk '{print $2}')
+        if [ "404" == "${file_status}" ] || [ "404" == "${checksum_status}" ] || [ "$(cat ${found_file}.checksum)" != "$(curl --silent ${upload_url}.checksum)" ]; then
+            echo "${file_status} upload_url ${upload_url}"
             # TODO 从文件读取用户名密码
             curl --silent --user "deployment:deployment" -T "${found_file}" "${upload_url}"
             curl --silent --user "deployment:deployment" -T "${found_file}.checksum" "${upload_url}.checksum"
@@ -106,7 +107,7 @@ for found_file in "${FOUND_FILES[@]}"; do
                 echo "upload done $(curl --silent ${upload_url}.checksum)"
             fi
         else
-            echo "${upload_url_status} skip upload_url ${upload_url}"
+            echo "${file_status} skip upload_url ${upload_url}"
         fi
     else
         echo "incomplete download ${found_file}"

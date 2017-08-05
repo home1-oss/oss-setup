@@ -1,9 +1,9 @@
 
 if ! type -p jq > /dev/null; then
     if type -p apt-get > /dev/null; then
-        sudo apt-get update -y; sudo apt-get install -y jq;
+        sudo apt-get update -y; sudo apt-get install -y --force-yes jq;
     elif type -p yum > /dev/null; then
-        sudo yum install -y --force-yes jq
+        sudo yum install -y jq
     else
         printf 'please install jq manually\n'
         exit 1
@@ -48,8 +48,10 @@ REGISTRIES=()
 if [ "${from}" == "registries" ]; then
     REGISTRIES+=('gcr.io.internal:25004')
     REGISTRIES+=('mirror.docker.internal')
-else
+elif [ "${from}" == "origin" ]; then
     REGISTRIES+=('')
+else
+    REGISTRIES+=("${from}")
 fi
 
 for registry in "${REGISTRIES[@]}"; do
