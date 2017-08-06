@@ -60,3 +60,4 @@ Run workloads (services)
 - Auto set rancherhost' name by `hostnamectl set-hostname xxx`
 - Index of LDAP doc of sub projects
 - Put jenkins pipeline repo on github
+- Move username and password of jenkins-swarm-slave-deploy.yaml from args to env secret
