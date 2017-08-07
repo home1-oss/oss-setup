@@ -8,20 +8,20 @@ but at least it's all documented here.
 
 ## Build local development environment
 
-- mac
+- [macos](./src/main/develop/mac/README.md)
 
-- linux
+- [linux](./src/main/develop/linux/README.md)
 
-- win
+- [windows](./src/main/develop/windows/README.md)
 
 ## Build clusters
 
-1. Cluster of raw machines
+1. [Cluster of raw machines](./src/main/raw/README.md)
 > run docker container on raw machine without orchestration platform such as k8s or rancher
 
 Run infrastructure for development, CI, and service runtime
 
-2. Cluster of cloud
+2. [Cluster of cloud](./src/main/cloud/README.md)
 > run docker container on orchestration platform such as k8s or rancher
 
 Run workloads (services)

@@ -1,5 +1,6 @@
 
 # Development environment on windows host
+Setup a mac windows machine
 
 ## Install chocolatey
 
@@ -59,6 +60,15 @@ git config --global core.autocrlf false
 git config --global core.filemode false
 git config --global core.ignorecase false
 git config --global core.safecrlf warn
+```
+
+## Clone oss-setup repository
+
+```bash
+# git bash
+mkdir -p ~/ws/home1
+cd ~/ws/home1
+git clone https://github.com/home1-oss/oss-setup.git
 ```
 
 ## Config cygwin

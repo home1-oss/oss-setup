@@ -1,5 +1,6 @@
-# mac
-Config a mac development machine
+
+# Development environment on macos host
+Setup a mac development machine
 
 
 ## Setup as a home1-oss user
