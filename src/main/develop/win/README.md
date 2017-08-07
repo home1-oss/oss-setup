@@ -45,17 +45,25 @@ choco install python2 7zip -y
 choco install visualcppbuildtools --version 14.0.25123.0 -y
 nvm install v6.11.0
 refreshenv
-choco install atom -y
 ```
 ```powershell
 # powershell
 '[Environment]::SetEnvironmentVariable("GYP_MSVS_VERSION", "2015", "User")'
 ```
 
+```cmd
+# cmd administrator mode
+choco install atom -y
+```
+
 ## Config git
 
-```
-# git bash
+In git bash and cygwin bash both
+```bash
+# git bash or cygwin bash
+git config --global user.email=username@users.noreply.github.com
+git config --global user.name=username
+
 git config --global core.autocrlf false
 git config --global core.filemode false
 git config --global core.ignorecase false
@@ -75,15 +83,15 @@ git clone https://github.com/home1-oss/oss-setup.git
 
 - Install packages
 
-- Cygwin here `chere -i -t mintty .`
-
+- Cygwin here
+Run cygwin's bash as 'Administrator', then `chere -i -t mintty .`
 
 - home directory
 
     see: [https://stackoverflow.com/questions/1494658/how-can-i-change-my-cygwin-home-folder-after-installation](https://stackoverflow.com/questions/1494658/how-can-i-change-my-cygwin-home-folder-after-installation)  
-    1. edit /etc/nsswitch.conf in cygwin's bash
-    2. change '# db_home:  /home/%U' to 'db_home:  windows'
-    3. move every thing into new home directory
+    1. edit `vi /etc/nsswitch.conf` in cygwin's bash
+    2. change `# db_home:  /home/%U` to `db_home:  windows`
+    3. move every thing (at `C:\tools\home\cygwin`) into new home directory (at `C:\Users\<username>` aka `/cygdrive/c/Users/<username>`)
 
 - package-management
 
