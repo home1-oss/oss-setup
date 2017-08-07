@@ -54,6 +54,10 @@ Run workloads (services)
 ## TODOS
 
 - A template that generate oss-internal
+- Move export BUILD_JIRA_PROJECTKEY=OSS
+       export BUILD_JIRA_USER=gitlab
+       export BUILD_JIRA_PASSWORD=zxcvmnbv
+  from infrastructure config into project ci config
 - A cron script do `sudo chmod a+rw /var/run/docker.sock` on all rancher/k8s hosts
 - Fix CI build on github forked projects
 - Change DNS by edit /etc/sysconfig/network-scripits/ifc-xxx (/etc/reslov.conf is not reboot safe)
