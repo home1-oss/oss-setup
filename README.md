@@ -30,23 +30,19 @@ Run workloads (services)
 
 - import https://github.com/home1-oss/common-config.git
 > into 'home1-oss/common-config' as internal project
-> set deploy key for configserver access
-> https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub
+> set or enable [deploy key](https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub) for configserver access
 
 - import https://github.com/home1-oss/oss-todomvc-app-config.git
 > into 'home1-oss/oss-todomvc-app-config' as private project
-> set deploy key for configserver access
-> https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub
+> set or enable [deploy key](https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub) for configserver access
 
 - import https://github.com/home1-oss/oss-todomvc-thymeleaf-config.git
 > into 'home1-oss/oss-todomvc-thymeleaf-config' as private project
-> set deploy key for configserver access
-> https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub
+> set or enable [deploy key](https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub) for configserver access
 
 - import https://github.com/home1-oss/oss-todomvc-gateway-config.git
 > into 'home1-oss/oss-todomvc-gateway-config' as private project
-> set deploy key for configserver access
-> https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub
+> set or enable [deploy key](https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub) for configserver access
 
 - import https://github.com/home1-oss/oss-todomvc.git
 > into 'home1-oss/oss-todomvc' as private project
