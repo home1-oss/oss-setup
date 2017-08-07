@@ -91,7 +91,7 @@ Run cygwin's bash as 'Administrator', then `chere -i -t mintty .`
     see: [https://stackoverflow.com/questions/1494658/how-can-i-change-my-cygwin-home-folder-after-installation](https://stackoverflow.com/questions/1494658/how-can-i-change-my-cygwin-home-folder-after-installation)  
     1. edit `vi /etc/nsswitch.conf` in cygwin's bash
     2. change `# db_home:  /home/%U` to `db_home:  windows`
-    3. move every thing (at `C:\tools\home`) into new home directory (at `C:\Users\<username>` aka ``)
+    3. move every thing (at `C:\tools\home\cygwin`) into new home directory (at `C:\Users\<username>` aka `/cygdrive/c/Users/<username>`)
 
 - package-management
 
