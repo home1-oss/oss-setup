@@ -33,6 +33,7 @@ Docker tools
 ```cmd
 # cmd administrator mode
 choco install virtualbox vagrant -y
+choco install VBoxHeadlessTray VBoxVmService -y --allow-empty-checksums
 choco install docker-toolbox --ignore-checksums -y
 choco install docker-machine docker-compose kubernetes-cli -y
 ```
@@ -116,7 +117,20 @@ Run `ssh-keygen -t rsa` in cygwin's bash
 C:\ProgramData\chocolatey\lib\Cygwin\tools\setup-x86_64.exe --quiet-mode --download --local-install --packages abook
 ```
 
-## Config docker
+## Auto logon and auto lock after logon
+
+- see: [auto-logon-and-lock/README.md](auto-logon-and-lock/README.md)
+
+## Graceful restart or shutdown (do this after [raw cluster](../../raw/README.md) up)
+
+- see: [graceful-restart-shutdown/README.md](graceful-restart-shutdown/README.md)
+- Merge `oss-setup/src/main/develop/windows/graceful-restart-shutdown/WaitToKillServiceTimeout.reg`
+- Config VBoxVmService, Edit `C:\vms\VBoxVmService.ini`, Add vms
+> note that `PauseShutdown` must less than value in `WaitToKillServiceTimeout.reg`
+
+see also: https://superuser.com/questions/959567/virtualbox-windows-graceful-shutdown-of-guests-on-host-shutdown
+
+## Config docker (do this after [raw cluster](../../raw/README.md) up)
 
 - `docker-machine ssh default -t sudo vi /var/lib/boot2docker/profile`
 - Add something like:
