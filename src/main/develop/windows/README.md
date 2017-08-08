@@ -89,6 +89,7 @@ git clone https://github.com/home1-oss/oss-setup.git
 ## Config cygwin
 
 - Install packages
+Run `oss-setup/src/main/develop/windows/install_cygwin_packages.cmd` by windows cmd
 
 - Cygwin here
 Run cygwin's bash as 'Administrator', then `chere -i -t mintty .`
@@ -99,6 +100,9 @@ Run cygwin's bash as 'Administrator', then `chere -i -t mintty .`
     1. edit `vi /etc/nsswitch.conf` in cygwin's bash
     2. change `# db_home:  /home/%U` to `db_home:  windows`
     3. move every thing (at `C:\tools\home\cygwin`) into new home directory (at `C:\Users\<username>` aka `/cygdrive/c/Users/<username>`)
+
+- Generate ssh key
+Run `ssh-keygen -t rsa` in cygwin's bash
 
 - package-management
 

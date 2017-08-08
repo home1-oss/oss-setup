@@ -6,124 +6,125 @@ SYSCTL_CONF_PATH = File.join(File.dirname(__FILE__), "vagrant_assets/sysctl.conf
 VAGRANT_PUB_PATH = File.join(File.dirname(__FILE__), "vagrant_assets/vagrant.pub")
 
 Vagrant.configure(2) do |config|
-    config.ssh.insert_key = false
-    config.ssh.private_key_path = ["#{ENV['HOME']}/.vagrant.d/insecure_private_key","#{ENV['HOME']}/.ssh/id_rsa"]
-    config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'" # avoids 'stdin: is not a tty' error.
+  config.ssh.insert_key = false
+  config.ssh.private_key_path = ["#{ENV['HOME']}/.vagrant.d/insecure_private_key","#{ENV['HOME']}/.ssh/id_rsa"]
+  config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'" # avoids 'stdin: is not a tty' error.
 
-    config.vm.box_check_update = false
-    #config.vm.box= "ubuntu/trusty64"
-    #config.vm.box_url = "ubuntu/trusty64"
-    config.vm.box= "ubuntu/xenial64"
-    config.vm.box_url = "ubuntu/xenial64"
+  config.vm.box_check_update = false
+  #config.vm.box= "ubuntu/trusty64"
+  #config.vm.box_url = "ubuntu/trusty64"
+  config.vm.box= "ubuntu/xenial64"
+  config.vm.box_url = "ubuntu/xenial64"
 
-    config.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: "true"
+  config.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: "true"
 
-    config.vm.provider :virtualbox do |v|
-      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-      v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
+  config.vm.provider :virtualbox do |v|
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
+  end
+
+  config.vm.provision "shell", inline: <<-SCRIPT
+    curl https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub > /root/.ssh/authorized_keys
+    printf "%s\n" "#{File.read("#{ENV['HOME']}/.ssh/id_rsa.pub")}" >> /root/.ssh/authorized_keys
+    chmod 600 /root/.ssh/authorized_keys
+    chown -R root:root /root/.ssh
+  SCRIPT
+
+  config.vm.define "net" do |net|
+    net.vm.hostname = 'net'
+
+    net.vm.network "forwarded_port", guest: 22, host: 60005, auto_correct: true
+    net.vm.network "private_network", adapter: 2, ip: "172.22.101.5", netmask: "255.255.255.0", nic_type: "82545EM"
+    net.vm.network "public_network", adapter: 3, ip: "192.168.199.5", netmask: "255.255.255.0", nic_type: "82545EM"
+    #net.vm.provision "shell", run: "always", inline: "ifconfig eth2 192.168.199.5 netmask 255.255.255.0 up"
+    # see: https://en.wikipedia.org/wiki/Unique_local_address
+    #net.vm.provision "shell", run: "always", inline: "ifconfig eth2 inet6 add fc00::17/7"
+
+    net.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--cpus", 1]
+      v.customize ["modifyvm", :id, "--memory", 1024]
+      v.customize ["modifyvm", :id, "--name", "net"]
     end
+  end
 
-    config.vm.provision "shell", inline: <<-SCRIPT
-      curl https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub > /root/.ssh/authorized_keys
-      printf "%s\n" "#{File.read("#{ENV['HOME']}/.ssh/id_rsa.pub")}" >> /root/.ssh/authorized_keys
-      chmod 600 /root/.ssh/authorized_keys
-      chown -R root:root /root/.ssh
-    SCRIPT
+  config.vm.define "repository" do |repository|
+    repository.vm.hostname = 'repository'
 
-    config.vm.define "net" do |net|
-      net.vm.hostname = 'net'
+    repository.vm.network "forwarded_port", guest: 22, host: 60010, auto_correct: true
+    repository.vm.network "private_network", adapter: 2, ip: "172.22.101.10", netmask: "255.255.255.0", nic_type: "82545EM"
+    repository.vm.network "public_network", adapter: 3, ip: "192.168.199.10", netmask: "255.255.255.0", nic_type: "82545EM"
+    #repository.vm.provision "shell", run: "always", inline: "ifconfig eth2 192.168.199.10 netmask 255.255.255.0 up"
+    #repository.vm.provision "shell", run: "always", inline: "ifconfig eth2 inet6 add fc00::17/7"
 
-      net.vm.network "forwarded_port", guest: 22, host: 60005, auto_correct: true
-      net.vm.network "private_network", adapter: 2, ip: "172.22.101.5", netmask: "255.255.255.0", nic_type: "82545EM"
-      net.vm.network "public_network", adapter: 3, ip: "192.168.199.5", netmask: "255.255.255.0", nic_type: "82545EM"
-      #net.vm.provision "shell", run: "always", inline: "ifconfig eth2 192.168.199.5 netmask 255.255.255.0 up"
-      # see: https://en.wikipedia.org/wiki/Unique_local_address
-      #net.vm.provision "shell", run: "always", inline: "ifconfig eth2 inet6 add fc00::17/7"
-
-      net.vm.provider :virtualbox do |v|
-        v.customize ["modifyvm", :id, "--cpus", 1]
-        v.customize ["modifyvm", :id, "--memory", 1024]
-        v.customize ["modifyvm", :id, "--name", "net"]
-      end
+    repository.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--cpus", 2]
+      v.customize ["modifyvm", :id, "--memory", 4096]
+      v.customize ["modifyvm", :id, "--name", "repository"]
     end
+  end
 
-    config.vm.define "repository" do |repository|
-      repository.vm.hostname = 'repository'
+  config.vm.define "ci" do |ci|
+    ci.vm.hostname = 'ci'
 
-      repository.vm.network "forwarded_port", guest: 22, host: 60010, auto_correct: true
-      repository.vm.network "private_network", adapter: 2, ip: "172.22.101.10", netmask: "255.255.255.0", nic_type: "82545EM"
-      repository.vm.network "public_network", adapter: 3, ip: "192.168.199.10", netmask: "255.255.255.0", nic_type: "82545EM"
-      #repository.vm.provision "shell", run: "always", inline: "ifconfig eth2 192.168.199.10 netmask 255.255.255.0 up"
-      #repository.vm.provision "shell", run: "always", inline: "ifconfig eth2 inet6 add fc00::17/7"
+    ci.vm.network "forwarded_port", guest: 22, host: 60015, auto_correct: true
+    ci.vm.network "private_network", adapter: 2, ip: "172.22.101.15", netmask: "255.255.255.0", nic_type: "82545EM"
+    ci.vm.network "public_network", adapter: 3, ip: "192.168.199.15", netmask: "255.255.255.0", nic_type: "82545EM"
+    #ci.vm.provision "shell", run: "always", inline: "ifconfig eth2 192.168.199.15 netmask 255.255.255.0 up"
+    #ci.vm.provision "shell", run: "always", inline: "ifconfig eth2 inet6 add fc00::17/7"
 
-      repository.vm.provider :virtualbox do |v|
-        v.customize ["modifyvm", :id, "--cpus", 2]
-        v.customize ["modifyvm", :id, "--memory", 4096]
-        v.customize ["modifyvm", :id, "--name", "repository"]
-      end
+    ci.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--cpus", 2]
+      v.customize ["modifyvm", :id, "--memory", 4096]
+      v.customize ["modifyvm", :id, "--name", "ci"]
     end
+  end
 
-    config.vm.define "ci" do |ci|
-      ci.vm.hostname = 'ci'
-
-      ci.vm.network "forwarded_port", guest: 22, host: 60015, auto_correct: true
-      ci.vm.network "private_network", adapter: 2, ip: "172.22.101.15", netmask: "255.255.255.0", nic_type: "82545EM"
-      ci.vm.network "public_network", adapter: 3, ip: "192.168.199.15", netmask: "255.255.255.0", nic_type: "82545EM"
-      #ci.vm.provision "shell", run: "always", inline: "ifconfig eth2 192.168.199.15 netmask 255.255.255.0 up"
-      #ci.vm.provision "shell", run: "always", inline: "ifconfig eth2 inet6 add fc00::17/7"
-
-      ci.vm.provider :virtualbox do |v|
-        v.customize ["modifyvm", :id, "--cpus", 2]
-        v.customize ["modifyvm", :id, "--memory", 4096]
-        v.customize ["modifyvm", :id, "--name", "ci"]
-      end
-    end
-
-    N = 3
-    (1..N).each do |machine_id|
-      config.vm.define "rawhost#{machine_id}" do |machine|
-        machine.vm.hostname = "rawhost#{machine_id}"
-        #machine.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: "true"
-        machine.vm.network "forwarded_port", guest: 22, host: 60050+machine_id, auto_correct: true
-        #machine.vm.network "private_network", ip: "172.22.101.#{50+machine_id}", netmask: "255.255.255.0", nic_type: "82545EM"
-        machine.vm.network "public_network", ip: "192.168.199.#{50+machine_id}", netmask: "255.255.255.0", nic_type: "82545EM"
-      end
+  N = 3
+  (1..N).each do |machine_id|
+    config.vm.define "rawhost#{machine_id}" do |machine|
+      machine.vm.hostname = "rawhost#{machine_id}"
+      #machine.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: "true"
+      machine.vm.network "forwarded_port", guest: 22, host: 60050+machine_id, auto_correct: true
+      #machine.vm.network "private_network", ip: "172.22.101.#{50+machine_id}", netmask: "255.255.255.0", nic_type: "82545EM"
+      machine.vm.network "public_network", ip: "192.168.199.#{50+machine_id}", netmask: "255.255.255.0", nic_type: "82545EM"
+      
       machine.vm.provider :virtualbox do |v|
         v.customize ["modifyvm", :id, "--cpus", 2]
         v.customize ["modifyvm", :id, "--memory", 4096]
         v.customize ["modifyvm", :id, "--name", "rawhost#{machine_id}"]
       end
     end
+  end
 
-    config.vm.provision "shell", :privileged => true, inline: "echo whoami $(whoami) pwd $(pwd)"
-    if File.exist?(VAGRANT_PUB_PATH)
-      config.vm.provision :file, :source => "#{VAGRANT_PUB_PATH}", :destination => "/tmp/authorized_keys"
-    else
-      config.vm.provision "shell", :privileged => true, inline: "sudo curl -o /tmp/authorized_keys https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub"
-    end
-    config.vm.provision "shell", :privileged => true, inline: <<-SCRIPT
-      mkdir -p /root/.ssh
-      cp -f /tmp/authorized_keys /root/.ssh/authorized_keys
-      printf "write %s into /root/.ssh/authorized_keys\n" "#{ENV['HOME']}/.ssh/id_rsa.pub"
-      printf "%s\n" "#{File.read("#{ENV['HOME']}/.ssh/id_rsa.pub")}" >> /root/.ssh/authorized_keys
-      chmod 600 /root/.ssh/authorized_keys
-      chown -R root:root /root/.ssh
-    SCRIPT
+  config.vm.provision "shell", :privileged => true, inline: "echo whoami $(whoami) pwd $(pwd)"
+  if File.exist?(VAGRANT_PUB_PATH)
+    config.vm.provision :file, :source => "#{VAGRANT_PUB_PATH}", :destination => "/tmp/authorized_keys"
+  else
+    config.vm.provision "shell", :privileged => true, inline: "sudo curl -o /tmp/authorized_keys https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub"
+  end
+  config.vm.provision "shell", :privileged => true, inline: <<-SCRIPT
+    mkdir -p /root/.ssh
+    cp -f /tmp/authorized_keys /root/.ssh/authorized_keys
+    printf "write %s into /root/.ssh/authorized_keys\n" "#{ENV['HOME']}/.ssh/id_rsa.pub"
+    printf "%s\n" "#{File.read("#{ENV['HOME']}/.ssh/id_rsa.pub")}" >> /root/.ssh/authorized_keys
+    chmod 600 /root/.ssh/authorized_keys
+    chown -R root:root /root/.ssh
+  SCRIPT
 
-    if File.exist?(SYSCTL_CONF_PATH)
-      config.vm.provision :file, :source => "#{SYSCTL_CONF_PATH}", :destination => "/tmp/sysctl.conf"
-      config.vm.provision :shell, :privileged => true, :inline => "if [[ -f /tmp/sysctl.conf ]]; then mv /tmp/sysctl.conf /etc/sysctl.conf; sysctl -p; fi"
-    end
-    if File.exist?(INIT_SH_PATH)
-      config.vm.provision :file, :source => "#{INIT_SH_PATH}", :destination => "/tmp/init.sh"
-      config.vm.provision :shell, :privileged => true, :inline => "chmod 755 /tmp/init.sh"
-      config.vm.provision :shell, :privileged => true, :inline => "/tmp/init.sh"
-    end
+  if File.exist?(SYSCTL_CONF_PATH)
+    config.vm.provision :file, :source => "#{SYSCTL_CONF_PATH}", :destination => "/tmp/sysctl.conf"
+    config.vm.provision :shell, :privileged => true, :inline => "if [[ -f /tmp/sysctl.conf ]]; then mv /tmp/sysctl.conf /etc/sysctl.conf; sysctl -p; fi"
+  end
+  if File.exist?(INIT_SH_PATH)
+    config.vm.provision :file, :source => "#{INIT_SH_PATH}", :destination => "/tmp/init.sh"
+    config.vm.provision :shell, :privileged => true, :inline => "chmod 755 /tmp/init.sh"
+    config.vm.provision :shell, :privileged => true, :inline => "/tmp/init.sh"
+  end
 
-    config.vm.provision "shell", run: "always", inline: <<-SCRIPT
-      route add default gw 192.168.199.1
-      #route -A inet6 add default gw fc00::1 eth2
-      eval `route -n | awk '{ if ($8 =="eth0" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
-      eval `route -n | awk '{ if ($8 =="eth1" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
-    SCRIPT
+  config.vm.provision "shell", run: "always", inline: <<-SCRIPT
+    route add default gw 192.168.199.1
+    #route -A inet6 add default gw fc00::1 eth2
+    eval `route -n | awk '{ if ($8 =="eth0" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
+    eval `route -n | awk '{ if ($8 =="eth1" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
+  SCRIPT
 end
