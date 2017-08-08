@@ -18,3 +18,5 @@ src/main/cloud/roles/oss-docker-install
 src/main/docker
 src/main/develop/**/roles
 src/main/raw/roles/oss-docker-install
+Jinja2-*
+PyYAML-*

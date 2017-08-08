@@ -11,7 +11,9 @@ if [ ! -d "Jinja2-2.9.6" ]; then
     (cd Jinja2-2.9.6; python setup.py install)
 fi
 
-ssh-keygen
+if [ ! -f ~/.ssh/id_rsa ] || [ ! -f ~/.ssh/id_rsa.pub ]; then
+    ssh-keygen
+fi
 
 # see: http://docs.ansible.com/ansible/latest/intro_installation.html#tarballs-of-tagged-releases
 if [ ! -d /opt/ansible ]; then
@@ -31,4 +33,5 @@ if [ ! -d /opt/ansible ]; then
     #git submodule update --init --recursive
 
     git checkout v2.3.1.0-1
+    source ./hacking/env-setup
 fi

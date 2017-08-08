@@ -117,6 +117,21 @@ Run `ssh-keygen -t rsa` in cygwin's bash
 C:\ProgramData\chocolatey\lib\Cygwin\tools\setup-x86_64.exe --quiet-mode --download --local-install --packages abook
 ```
 
+## Create default docker machine
+
+- Download `https://github.com/boot2docker/boot2docker/releases/download/v17.06.0-ce/boot2docker.iso`
+to `C:\Users\<YourUserName>\.docker\machine\cache\boot2docker.iso`
+
+- Double click `Docker Quickstart Terminal` to create default docker machine (in virtualbox)
+
+## Make windows host be ansible control
+
+- Run `oss-setup/src/main/develop/windows/make_windows_host_ansible_control.sh` in cygwin's bash
+- Run `printf '\nexport PATH=/opt/ansible/bin:$PATH\n' >> ~/.bashrc` in cygwin's bash
+- Run `source ~/.bash_profile` in cygwin's bash
+- Run `ansible --version` in cygwin's bash to verify
+- If has error, `cd /opt/ansible && source ./hacking/env-setup` and try again
+
 ## Auto logon and auto lock after logon
 
 - see: [auto-logon-and-lock/README.md](auto-logon-and-lock/README.md)
