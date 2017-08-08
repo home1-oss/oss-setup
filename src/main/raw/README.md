@@ -32,10 +32,6 @@ ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_p
     -e "branch=develop infrastructure=internal proxy=<e.g. socks5://127.0.0.1:1080>"
 ```
 
-curl -SL http://nexus3.internal:5001/v2/rancher/healthcheck/manifests/v0.3.1
-curl -SL http://mirror.docker.internal/v2/rancher/healthcheck/manifests/v0.3.1
-curl -SL http://mirror.docker.internal/v2/rancher/healthcheck/blobs/sha256:6aed34ea9c11d94cd89498c22936f0d32f67525aebe35a6159167febae5ddfb8
-
 ## Services
 
 - [DNS(bind) https://bind.internal:10000/](https://bind.internal:10000/)
@@ -94,7 +90,7 @@ or
 > Proxy to gitlab
 
 - [Jenkins http://jenkins.internal:18083](http://jenkins.internal:18083)
-> Default username/password: run `docker logs -f jenkins.internal` on ci host to find generated password. 
+> Default username/password: run `docker logs -f jenkins.internal` on ci host to find generated password.
 
 - [Sonarqube http://sonarqube.internal:9000](http://sonarqube.internal:9000)
 > Default username/password: admin/admin

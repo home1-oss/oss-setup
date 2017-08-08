@@ -338,7 +338,7 @@
 
 
 - name: Docker config
-  hosts: ["ci"]
+  hosts: ["ci", "rawhost1", "rawhost2", "rawhost3"]
   vars:
     docker_insecure_registries:
     - registry.docker.internal
