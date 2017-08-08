@@ -8,7 +8,7 @@ but at least it's all documented here.
 
 ## Build local development environment
 
-- [macos](./src/main/develop/mac/README.md)
+- [macos](src/main/develop/macos/README.md)
 
 - [linux](./src/main/develop/linux/README.md)
 
