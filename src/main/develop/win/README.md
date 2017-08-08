@@ -24,6 +24,7 @@ choco config set proxyPassword <passwordThatGetsEncryptedInFile> # optional
 
 ```cmd
 # cmd administrator mode
+choco install chromium GoogleChrome -y
 choco install git -y
 choco install cygwin -y
 ```
@@ -36,7 +37,7 @@ choco install docker-toolbox --ignore-checksums -y
 choco install docker-machine docker-compose kubernetes-cli -y
 ```
 
-Atom tools
+Atom
 see: [https://github.com/atom/atom/blob/master/docs/build-instructions/windows.md](https://github.com/atom/atom/blob/master/docs/build-instructions/windows.md)
 ```cmd
 # cmd administrator mode
@@ -56,13 +57,19 @@ refreshenv
 choco install atom -y
 ```
 
+Install atom plugins
+```cmd
+# cmd
+apm install editorconfig
+```
+
 ## Config git
 
 In git bash and cygwin bash both
 ```bash
 # git bash or cygwin bash
-git config --global user.email=username@users.noreply.github.com
-git config --global user.name=username
+git config --global user.email "username@users.noreply.github.com"
+git config --global user.name "username"
 
 git config --global core.autocrlf false
 git config --global core.filemode false
