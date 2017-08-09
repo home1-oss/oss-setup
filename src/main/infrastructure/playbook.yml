@@ -1,6 +1,6 @@
 ---
 - name: Installing and configuring Docker
-  hosts: all
+  hosts: infrastructure
   vars:
     create_oss_network: yes
     install_docker_compose: yes
@@ -17,7 +17,7 @@
     - { role: home1-oss.oss-docker-config, tags: ["always"] }
 
 - name: clean up
-  hosts: all
+  hosts: infrastructure
   tasks:
   - shell: "{{ item }}"
     with_items:
