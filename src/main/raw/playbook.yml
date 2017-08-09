@@ -38,16 +38,16 @@
     service: rawhost1
     service_ip: "{{ hostvars['rawhost1']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns"] }
 - hosts: "net"
   vars:
     service: rawhost2
     service_ip: "{{ hostvars['rawhost2']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns"] }
 - hosts: "net"
   vars:
     service: rawhost3
     service_ip: "{{ hostvars['rawhost3']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns"] }

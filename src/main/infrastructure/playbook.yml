@@ -46,7 +46,7 @@
     service: bind
     service_ip: "{{ hostvars['net']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns"] }
 
 - name: Setup /etc/resolv.conf
   hosts: ["repository", "ci"]
@@ -78,14 +78,13 @@
     service: http-to-socks
     service_ip: "{{ hostvars['net']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "privoxy"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "privoxy"] }
 - hosts: "net"
   vars:
     service: smart-http-proxy
     service_ip: "{{ hostvars['net']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "privoxy"] }
-
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "privoxy"] }
 
 - name: openldap
   hosts: "net"
@@ -103,7 +102,7 @@
     service: ldap
     service_ip: "{{ hostvars['net']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "ldap"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "ldap"] }
 - name: phpldapadmin
   hosts: "net"
   vars:
@@ -120,7 +119,7 @@
     service: phpldapadmin
     service_ip: "{{ hostvars['net']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "ldap"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "ldap"] }
 
 
 - name: gcr.io
@@ -142,7 +141,7 @@
     service: gcr.io
     service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: nexus3
   hosts: "repository"
@@ -165,11 +164,13 @@
     service: nexus3
     service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: fileserver
   hosts: "repository"
   vars:
+    git_repo: https://github.com/home1-oss/docker-proxy.git
+    git_dest: /tmp/docker-proxy
     file: docker-compose-fileserver.yml
   environment:
     BACKEND_DOMAIN: nexus3
@@ -177,17 +178,19 @@
     SERVER_LOCATION: ~ ^/(.*)
     SERVER_PROXY_PASS_CONTEXT: /nexus/repository/files/$1
   roles:
-  - { role: docker-proxy, tags: ["nexus3"] }
+  - { role: docker-compose, tags: ["nexus3"] }
 - hosts: "net"
   vars:
     service: fileserver
     service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: mirror.docker
   hosts: "repository"
   vars:
+    git_repo: https://github.com/home1-oss/docker-proxy.git
+    git_dest: /tmp/docker-proxy
     file: docker-compose-mirror.yml
   environment:
     BACKEND_DOMAIN: nexus3
@@ -195,17 +198,19 @@
     BASIC_AUTH_USER: deployment
     INFRASTRUCTURE: "{{ infrastructure }}"
   roles:
-  - { role: docker-proxy, tags: ["nexus3"] }
+  - { role: docker-compose, tags: ["nexus3"] }
 - hosts: "net"
   vars:
     service: mirror.docker
     service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: mvnsite
   hosts: "repository"
   vars:
+    git_repo: https://github.com/home1-oss/docker-proxy.git
+    git_dest: /tmp/docker-proxy
     file: docker-compose-mvnsite.yml
   environment:
     BACKEND_DOMAIN: nexus3
@@ -213,33 +218,37 @@
     SERVER_LOCATION: ~ ^/(.*)
     SERVER_PROXY_PASS_CONTEXT: /nexus/repository/mvnsite/$1
   roles:
-  - { role: docker-proxy, tags: ["nexus3"] }
+  - { role: docker-compose, tags: ["nexus3"] }
 - hosts: "net"
   vars:
     service: mvnsite
     service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: nexus
   hosts: "repository"
   vars:
+    git_repo: https://github.com/home1-oss/docker-proxy.git
+    git_dest: /tmp/docker-proxy
     file: docker-compose-nexus.yml
   environment:
     BACKEND_DOMAIN: nexus3
     INFRASTRUCTURE: "{{ infrastructure }}"
   roles:
-  - { role: docker-proxy, tags: ["nexus3"] }
+  - { role: docker-compose, tags: ["nexus3"] }
 - hosts: "net"
   vars:
     service: nexus
     service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: registry.docker
   hosts: "repository"
   vars:
+    git_repo: https://github.com/home1-oss/docker-proxy.git
+    git_dest: /tmp/docker-proxy
     file: docker-compose-registry.yml
   environment:
     BACKEND_DOMAIN: nexus3
@@ -247,29 +256,31 @@
     BASIC_AUTH_USER: deployment
     INFRASTRUCTURE: "{{ infrastructure }}"
   roles:
-  - { role: docker-proxy, tags: ["nexus3"] }
+  - { role: docker-compose, tags: ["nexus3"] }
 - hosts: "net"
   vars:
     service: registry.docker
     service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: docker-proxy
   hosts: "repository"
   vars:
+    git_repo: https://github.com/home1-oss/docker-proxy.git
+    git_dest: /tmp/docker-proxy
     file: docker-compose.yml
   environment:
     INFRASTRUCTURE: "{{ infrastructure }}"
     SERVER_DOMAIN: "*"
   roles:
-  - { role: docker-proxy, tags: ["nexus3"] }
+  - { role: docker-compose, tags: ["nexus3"] }
 #- hosts: "net"
 #  vars:
 #    service: docker-proxy
 #    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
 #  roles:
-#  - { role: oss-dns-record, tags: ["dns", "nexus3"] }
+#  - { role: home1-oss.oss-dns-record, tags: ["dns", "nexus3"] }
 
 - name: mysql
   hosts: "repository"
@@ -291,7 +302,7 @@
     service: mysql
     service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "mysql"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "mysql"] }
 
 - name: postgresql
   hosts: "repository"
@@ -313,7 +324,7 @@
     service: postgresql
     service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "postgresql"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "postgresql"] }
 
 - name: cloudbus
   hosts: "repository"
@@ -334,7 +345,7 @@
     service: cloudbus
     service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "cloudbus"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "cloudbus"] }
 
 
 - name: Docker config
@@ -368,10 +379,12 @@
     service: sonarqube
     service_ip: "{{ hostvars['ci']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "sonarqube"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "sonarqube"] }
 - name: sonar
   hosts: "repository"
   vars:
+    git_repo: https://github.com/home1-oss/docker-proxy.git
+    git_dest: /tmp/docker-proxy
     file: docker-compose-sonar.yml
   environment:
     BACKEND_DOMAIN: sonarqube
@@ -379,13 +392,13 @@
     INFRASTRUCTURE: "{{ infrastructure }}"
     SERVER_DOMAIN: sonar
   roles:
-  - { role: docker-proxy, tags: ["sonarqube"] }
+  - { role: docker-compose, tags: ["sonarqube"] }
 - hosts: "net"
   vars:
     service: sonar
     service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "sonarqube"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "sonarqube"] }
 
 - name: gitlab
   hosts: "ci"
@@ -412,10 +425,12 @@
     service: gitlab
     service_ip: "{{ hostvars['ci']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "gitlab"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "gitlab"] }
 - name: git
   hosts: "repository"
   vars:
+    git_repo: https://github.com/home1-oss/docker-proxy.git
+    git_dest: /tmp/docker-proxy
     file: docker-compose-git.yml
   environment:
     BACKEND_DOMAIN: gitlab
@@ -423,13 +438,13 @@
     INFRASTRUCTURE: "{{ infrastructure }}"
     SERVER_DOMAIN: git
   roles:
-  - { role: docker-proxy, tags: ["gitlab"] }
+  - { role: docker-compose, tags: ["gitlab"] }
 - hosts: "net"
   vars:
     service: git
     service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "gitlab"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "gitlab"] }
 
 - name: jenkins
   hosts: "ci"
@@ -448,4 +463,4 @@
     service: jenkins
     service_ip: "{{ hostvars['ci']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "jenkins"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "jenkins"] }

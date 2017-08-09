@@ -28,19 +28,19 @@
     service: rancherhost1
     service_ip: "{{ hostvars['rancherhost1']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns"] }
 - hosts: "net"
   vars:
     service: rancherhost2
     service_ip: "{{ hostvars['rancherhost2']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns"] }
 - hosts: "net"
   vars:
     service: rancherhost3
     service_ip: "{{ hostvars['rancherhost3']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns"] }
 
 - name: Setting up Rancher Server
   hosts: "rancherserver"
@@ -52,7 +52,7 @@
     service: rancherserver
     service_ip: "{{ hostvars['rancherserver']['ansible_ssh_host'] }}"
   roles:
-  - { role: oss-dns-record, tags: ["dns", "rancher_server"] }
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "rancher_server"] }
 
 - name: Register Rancher Hosts
   hosts: "{{ hosts | default('hosts') }}"
