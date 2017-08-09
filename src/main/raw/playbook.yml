@@ -49,7 +49,7 @@
   - { role: oss-dns-record, tags: ["dns"] }
 
 - name: Setup /etc/resolv.conf
-  hosts: ["repository", "ci"]
+  hosts: ["repository", "ci", "rawhost1", "rawhost2", "rawhost3"]
   vars:
     resolv_conf_nameservers:
     - "{{ hostvars['net']['ansible_ssh_host'] }}"

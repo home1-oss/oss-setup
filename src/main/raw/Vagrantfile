@@ -74,7 +74,7 @@ Vagrant.configure(2) do |config|
 
     ci.vm.provider :virtualbox do |v|
       v.customize ["modifyvm", :id, "--cpus", 2]
-      v.customize ["modifyvm", :id, "--memory", 4096]
+      v.customize ["modifyvm", :id, "--memory", 6144]
       v.customize ["modifyvm", :id, "--name", "ci"]
     end
   end
@@ -87,7 +87,7 @@ Vagrant.configure(2) do |config|
       machine.vm.network "forwarded_port", guest: 22, host: 60050+machine_id, auto_correct: true
       #machine.vm.network "private_network", ip: "172.22.101.#{50+machine_id}", netmask: "255.255.255.0", nic_type: "82545EM"
       machine.vm.network "public_network", ip: "192.168.199.#{50+machine_id}", netmask: "255.255.255.0", nic_type: "82545EM"
-      
+
       machine.vm.provider :virtualbox do |v|
         v.customize ["modifyvm", :id, "--cpus", 2]
         v.customize ["modifyvm", :id, "--memory", 4096]
