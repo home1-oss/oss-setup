@@ -23,6 +23,25 @@
   roles:
   - { role: home1-oss.oss-docker-config, tags: ["docker-config"] }
 
+- hosts: "net"
+  vars:
+    service: rancherhost1
+    service_ip: "{{ hostvars['rancherhost1']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns"] }
+- hosts: "net"
+  vars:
+    service: rancherhost2
+    service_ip: "{{ hostvars['rancherhost2']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns"] }
+- hosts: "net"
+  vars:
+    service: rancherhost3
+    service_ip: "{{ hostvars['rancherhost3']['ansible_ssh_host'] }}"
+  roles:
+  - { role: oss-dns-record, tags: ["dns"] }
+
 - name: Setting up Rancher Server
   hosts: "rancherserver"
   sudo: yes

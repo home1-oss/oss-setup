@@ -1,0 +1,9 @@
+---
+
+branch: "master"
+
+create_oss_network: yes
+
+forwarders: ""
+infrastructure: "local"
+proxy: ""

@@ -16,12 +16,13 @@ but at least it's all documented here.
 
 ## Build clusters
 
-1. [Cluster of raw machines](./src/main/raw/README.md)
+1. [Cluster of infrastructure](./src/main/infrastructure/README.md)
+> DNS, proxy, code and artifact repositories, CI
+
+2. [Cluster of raw machines](./src/main/raw/README.md)
 > run docker container on raw machine without orchestration platform such as k8s or rancher
 
-Run infrastructure for development, CI, and service runtime
-
-2. [Cluster of cloud](./src/main/cloud/README.md)
+3. [Cluster of cloud](./src/main/cloud/README.md)
 > run docker container on orchestration platform such as k8s or rancher
 
 Run workloads (services)
