@@ -11,17 +11,15 @@ Vagrant.configure(2) do |config|
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'" # avoids 'stdin: is not a tty' error.
 
   config.vm.box_check_update = false
-  #config.vm.box= "ubuntu/trusty64"
-  #config.vm.box_url = "ubuntu/trusty64"
   config.vm.box= "ubuntu/xenial64"
   config.vm.box_url = "ubuntu/xenial64"
 
   config.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: "true"
 
-  config.vm.provider :virtualbox do |v|
-    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
-  end
+  #config.vm.provider :virtualbox do |v|
+  #  v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+  #  v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
+  #end
 
   config.vm.provision "shell", inline: <<-SCRIPT
     curl https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub > /root/.ssh/authorized_keys
@@ -29,55 +27,6 @@ Vagrant.configure(2) do |config|
     chmod 600 /root/.ssh/authorized_keys
     chown -R root:root /root/.ssh
   SCRIPT
-
-  config.vm.define "net" do |net|
-    net.vm.hostname = 'net'
-
-    net.vm.network "forwarded_port", guest: 22, host: 60005, auto_correct: true
-    net.vm.network "private_network", adapter: 2, ip: "172.22.101.5", netmask: "255.255.255.0", nic_type: "82545EM"
-    net.vm.network "public_network", adapter: 3, ip: "192.168.199.5", netmask: "255.255.255.0", nic_type: "82545EM"
-    #net.vm.provision "shell", run: "always", inline: "ifconfig eth2 192.168.199.5 netmask 255.255.255.0 up"
-    # see: https://en.wikipedia.org/wiki/Unique_local_address
-    #net.vm.provision "shell", run: "always", inline: "ifconfig eth2 inet6 add fc00::17/7"
-
-    net.vm.provider :virtualbox do |v|
-      v.customize ["modifyvm", :id, "--cpus", 1]
-      v.customize ["modifyvm", :id, "--memory", 1536]
-      v.customize ["modifyvm", :id, "--name", "net"]
-    end
-  end
-
-  config.vm.define "repository" do |repository|
-    repository.vm.hostname = 'repository'
-
-    repository.vm.network "forwarded_port", guest: 22, host: 60010, auto_correct: true
-    repository.vm.network "private_network", adapter: 2, ip: "172.22.101.10", netmask: "255.255.255.0", nic_type: "82545EM"
-    repository.vm.network "public_network", adapter: 3, ip: "192.168.199.10", netmask: "255.255.255.0", nic_type: "82545EM"
-    #repository.vm.provision "shell", run: "always", inline: "ifconfig eth2 192.168.199.10 netmask 255.255.255.0 up"
-    #repository.vm.provision "shell", run: "always", inline: "ifconfig eth2 inet6 add fc00::17/7"
-
-    repository.vm.provider :virtualbox do |v|
-      v.customize ["modifyvm", :id, "--cpus", 2]
-      v.customize ["modifyvm", :id, "--memory", 4096]
-      v.customize ["modifyvm", :id, "--name", "repository"]
-    end
-  end
-
-  config.vm.define "ci" do |ci|
-    ci.vm.hostname = 'ci'
-
-    ci.vm.network "forwarded_port", guest: 22, host: 60015, auto_correct: true
-    ci.vm.network "private_network", adapter: 2, ip: "172.22.101.15", netmask: "255.255.255.0", nic_type: "82545EM"
-    ci.vm.network "public_network", adapter: 3, ip: "192.168.199.15", netmask: "255.255.255.0", nic_type: "82545EM"
-    #ci.vm.provision "shell", run: "always", inline: "ifconfig eth2 192.168.199.15 netmask 255.255.255.0 up"
-    #ci.vm.provision "shell", run: "always", inline: "ifconfig eth2 inet6 add fc00::17/7"
-
-    ci.vm.provider :virtualbox do |v|
-      v.customize ["modifyvm", :id, "--cpus", 2]
-      v.customize ["modifyvm", :id, "--memory", 6144]
-      v.customize ["modifyvm", :id, "--name", "ci"]
-    end
-  end
 
   N = 3
   (1..N).each do |machine_id|

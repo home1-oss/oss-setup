@@ -1,7 +1,7 @@
-[raw]
+[infrastructure]
 net ansible_ssh_port=22 ansible_ssh_host=192.168.199.5
-repository ansible_ssh_port=22 ansible_ssh_host=192.168.199.10
-ci ansible_ssh_port=22 ansible_ssh_host=192.168.199.15
+
+[raw]
 rawhost1 ansible_ssh_port=22 ansible_ssh_host=192.168.199.51
 rawhost2 ansible_ssh_port=22 ansible_ssh_host=192.168.199.52
 rawhost3 ansible_ssh_port=22 ansible_ssh_host=192.168.199.53
