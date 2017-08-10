@@ -7,9 +7,11 @@ C:\tools\cygwin\cygwinsetup.exe ^
 aria2,^
 autoconf,^
 automake,^
+bind-utils,^
 bzip2,^
 chere,^
 curl,^
+diffutils,^
 dos2unix,^
 gcc-g++,^
 jq,^
@@ -17,12 +19,15 @@ mingw64-x86_64-gcc-g++,^
 mingw64-x86_64-pkg-config,^
 mingw64-x86_64-yaml,^
 git,^
+git-svn,^
+inetutils,^
 libyaml0_2,^
 libyaml-devel,^
 make,^
 openssl,^
 openssh,^
 openssl-devel,^
+patchutils,^
 pkg-config,^
 python2,^
 python2-devel,^
