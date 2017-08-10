@@ -30,6 +30,8 @@ docker volume rm $(docker volume ls -q)
 
 docker ps -a
 docker volume ls
+
+docker images | grep mirror.docker.internal | awk '"'"'{print $1":"$2}'"'"' | xargs docker rmi
 '
 
 done
