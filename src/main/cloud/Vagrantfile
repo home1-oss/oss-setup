@@ -114,5 +114,6 @@ Vagrant.configure(2) do |config|
     #route -A inet6 add default gw fc00::1 eth2
     eval `route -n | awk '{ if ($8 =="eth0" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
     #eval `route -n | awk '{ if ($8 =="eth1" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
+    eval `route -n | awk '{ if ($8 =="enp0s3" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
   SCRIPT
 end
