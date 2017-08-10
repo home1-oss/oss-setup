@@ -32,7 +32,7 @@ Vagrant.configure(2) do |config|
     rancherserver.vm.network "public_network", ip: "192.168.199.100", netmask: "255.255.255.0", nic_type: "82545EM"
 
     rancherserver.vm.provider :virtualbox do |v|
-      v.customize ["modifyvm", :id, "--memory", 1536]
+      v.customize ["modifyvm", :id, "--memory", 2048]
       v.customize ["modifyvm", :id, "--name", "rancherserver"]
       #v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
       #v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
