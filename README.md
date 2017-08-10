@@ -62,3 +62,10 @@ Run workloads (services)
 - Index of LDAP doc of sub projects
 - Put jenkins pipeline repo on github
 - Move username and password of jenkins-swarm-slave-deploy.yaml from args to env secret
+
+- Add DNS setup for privoxy container
+- Test download file from fileserver.internal through smart-http-proxy.internal:28119
+
+- clear docker network and bridges in clear_hosts.sh 
+- Move install python script into inline script
+- Ubuntu 16.04 disk space issue
