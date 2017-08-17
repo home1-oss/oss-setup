@@ -11,27 +11,44 @@ if ! type -p jq > /dev/null; then
 fi
 
 RANCHER_IMAGES=()
-RANCHER_IMAGES+=('_/rancher/agent:v1.2.5')
 #RANCHER_IMAGES+=('_/rancher/container-crontab')
+#RANCHER_IMAGES+=('_/rancher/external-dns')
+#RANCHER_IMAGES+=('_/rancher/lb-service-haproxy')
+#RANCHER_IMAGES+=('_/rancher/swarmkit')
+
+# rancher/server:v1.6.3 rancher/k8s:v1.6.6-rancher1-4
+# see: https://forums.rancher.com/t/rancher-release-v1-6-3
+RANCHER_IMAGES+=('_/rancher/agent:v1.2.5')
 RANCHER_IMAGES+=('_/rancher/dns:v0.15.1')
 RANCHER_IMAGES+=('_/rancher/etc-host-updater:v0.0.2')
-RANCHER_IMAGES+=('_/rancher/etcd:v2.3.7-11')
-#RANCHER_IMAGES+=('_/rancher/external-dns')
+#RANCHER_IMAGES+=('_/rancher/etcd:v2.3.7-11')
 RANCHER_IMAGES+=('_/rancher/healthcheck:v0.3.1')
-#RANCHER_IMAGES+=('_/rancher/lb-service-haproxy')
-RANCHER_IMAGES+=('_/rancher/lb-service-rancher:v0.7.4')
-RANCHER_IMAGES+=('_/rancher/metadata:v0.9.2')
-RANCHER_IMAGES+=('_/rancher/net:v0.11.3')
+#RANCHER_IMAGES+=('_/rancher/lb-service-rancher:v0.7.4')
+#RANCHER_IMAGES+=('_/rancher/metadata:v0.9.2')
+#RANCHER_IMAGES+=('_/rancher/net:v0.11.3')
 RANCHER_IMAGES+=('_/rancher/net:holder')
-RANCHER_IMAGES+=('_/rancher/network-manager:v0.7.4')
+#RANCHER_IMAGES+=('_/rancher/network-manager:v0.7.4')
 RANCHER_IMAGES+=('_/rancher/scheduler:v0.8.2')
-RANCHER_IMAGES+=('_/rancher/server:v1.6.3')
-#RANCHER_IMAGES+=('_/rancher/swarmkit')
+#RANCHER_IMAGES+=('_/rancher/server:v1.6.3')
 # rancher k8s
-RANCHER_IMAGES+=('_/rancher/k8s:v1.6.6-rancher1-4')
-RANCHER_IMAGES+=('_/rancher/kubectld:v0.6.8')
-RANCHER_IMAGES+=('_/rancher/kubernetes-agent:v0.6.2')
-RANCHER_IMAGES+=('_/rancher/kubernetes-auth:v0.0.4')
+#RANCHER_IMAGES+=('_/rancher/k8s:v1.6.6-rancher1-4')
+#RANCHER_IMAGES+=('_/rancher/kubectld:v0.6.8')
+#RANCHER_IMAGES+=('_/rancher/kubernetes-agent:v0.6.2')
+#RANCHER_IMAGES+=('_/rancher/kubernetes-auth:v0.0.4')
+
+# rancher/server:v1.6.7 rancher/k8s:v1.7.2-rancher7
+# see: https://forums.rancher.com/t/rancher-release-v1-6-7
+RANCHER_IMAGES+=('_/rancher/etcd:v2.3.7-13')
+RANCHER_IMAGES+=('_/rancher/lb-service-rancher:v0.7.8')
+RANCHER_IMAGES+=('_/rancher/metadata:v0.9.3')
+RANCHER_IMAGES+=('_/rancher/net:v0.11.5')
+RANCHER_IMAGES+=('_/rancher/net:v0.11.7')
+RANCHER_IMAGES+=('_/rancher/network-manager:v0.7.7')
+RANCHER_IMAGES+=('_/rancher/server:v1.6.7')
+RANCHER_IMAGES+=('_/rancher/k8s:v1.7.2-rancher7')
+RANCHER_IMAGES+=('_/rancher/kubectld:v0.8.2')
+RANCHER_IMAGES+=('_/rancher/kubernetes-agent:v0.6.3')
+RANCHER_IMAGES+=('_/rancher/kubernetes-auth:v0.0.7')
 
 from="$1"
 if [ -z "${from}" ]; then from="registries"; fi

@@ -24,11 +24,11 @@ for container in ${vxlan_containers[@]}; do
         echo "rule '${rule_found}' found"
     fi
 
-    echo "run 'sudo ip route add 10.42.0.0/16 via ${host_ip}' and 'route -n' on linux to add and verify route table entry."
+    echo "run 'sudo ip route add 10.42.0.0/16 via ${host_ip}'/'route -n'/'route del default gw ${host_ip}' on linux to add/verify/delete static route."
     echo "run 'sudo route -n add -net 10.42.0.0/16 ${host_ip}'/'netstat -nr'/'sudo route delete 10.42.0.0/16 ${host_ip}' on mac to add/verify/delete static route."
     echo "run 'route ADD 10.42.0.0 MASK 255.255.0.0 ${host_ip}'/'route print'/'route delete 10.42.0.0' on windows to add/verify/delete static route."
 
-    echo "run 'sudo ip route add 10.43.0.0/16 via ${host_ip}' and 'route -n' on linux to add and verify route table entry."
+    echo "run 'sudo ip route add 10.43.0.0/16 via ${host_ip}'/'route -n'/'route del default gw ${host_ip}' on linux to add/verify/delete static route."
     echo "run 'sudo route -n add -net 10.43.0.0/16 ${host_ip}'/'netstat -nr'/'sudo route delete 10.43.0.0/16 ${host_ip}' on mac to add/verify/delete static route."
     echo "run 'route ADD 10.43.0.0 MASK 255.255.0.0 ${host_ip}'/'route print'/'route delete 10.43.0.0' on windows to add/verify/delete static route."
 

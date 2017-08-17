@@ -1,12 +1,12 @@
 ---
 - name: Pull rancher/server
   docker_image:
-    name: rancher/server:v1.6.3
+    name: rancher/server:v1.6.7
 
 - name: Run the rancher/server container
   docker_container:
     name: "{{ rancher_name }}"
-    image: rancher/server:v1.6.3
+    image: rancher/server:v1.6.7
     restart_policy: always
     ports:
     - "{{ rancher_port }}:8080"

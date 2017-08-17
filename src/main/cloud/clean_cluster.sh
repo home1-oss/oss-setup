@@ -1,5 +1,8 @@
 
+# see: http://blog.yohanliyanage.com/2015/05/docker-clean-up-after-yourself/
+
 HOSTS=()
+HOSTS+=('192.168.199.100')
 HOSTS+=('192.168.199.101')
 HOSTS+=('192.168.199.102')
 HOSTS+=('192.168.199.103')

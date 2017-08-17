@@ -79,9 +79,33 @@ Run workloads (services)
   Project: oss-eureka-k8s
   Environment: staging
   Version: 1.0.7.OSS
+
+```sh
+kubectl get services
+kubectl describe services/eureka
+```
+
+  Find service's address
+```sh
+pod=$(kubectl get pods | grep eureka- | awk '{print $1}')
+kubectl exec -it ${pod} nslookup eureka.default.svc.cluster.local 127.0.0.1:10053
+```
+
+  Find endpoint's address
+```sh
+pod=$(kubectl get pods --all-namespaces | grep kube-dns | awk '{print $2}')
+kubectl --namespace=kube-system exec -it ${pod} -c kubedns -- nslookup eureka.default.svc.cluster.local 127.0.0.1:10053
+#kubectl --namespace kube-system describe pods/${pod} | grep IP
+```
   
-  `kubectl get services`
-  `kubectl describe services/eureka`
+  Find kube-dns service
+```sh
+kubectl describe --namespace=kube-system svc kube-dns
+```
+
+  Cluster DNS is 10.43.0.10
+  Run `nslookup eureka.default.svc.cluster.local 10.43.0.10` on pod's container
+
 
 
 ## TODOS
@@ -102,13 +126,16 @@ Run workloads (services)
 - Auto set rancherhost' name by `hostnamectl set-hostname xxx`
 
 
-- clear docker network and bridges in clear_hosts.sh 
 - Move install python script into inline script
 - Ubuntu 16.04 disk space issue
 
 - Move username and password of jenkins-swarm-slave-deploy.yaml from args to env secret
 - Index of LDAP doc of sub projects
 - Time sync in inline script
+
+- setenforce 0 ?
+
+- issue: rancher/server:v1.6.3 rancher/k8s:v1.6.6-rancher1-4 k8s cluster-domain not set correctly.
 
 # References
 

@@ -94,7 +94,12 @@ Add a custom catalog, which has a modified k8s cluster domain.
 2. Add catalog
  Name: catalog-oss-internal
  URL: https://github.com/home1-oss/rancher-catalog.git
- Branch: v1.6-release-oss-internal
+ Branch:
+ - v1.6-release (with default 'cluster-domain=cluster.local')
+ - v1.6-release-oss-internal (with modified cluster domain 'internal.k8s')
+
+There is a issue that k8s DNS not use modified cluster domain, even if kubelet's --cluster-domain option is set.
+I found this issue when using rancher/server:1.6.3 and rancher-catalog's v1.6-release branch.
 
 ```sh
 rancher env template import env-tmpl-k8s-vxlan-oss-internal.yml
@@ -116,6 +121,7 @@ CHANGING THE DEFAULT REGISTRY
 2. Find the registry.default setting and click on the edit icon.
 3. Add the registry value and click on Save.
 
+- Run k8s cluster hosts
 ```
 ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
     --tags "rancher_reg" \
@@ -129,9 +135,19 @@ ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_p
 ```
 
   I run VXLAN (rancher/k8s hosts) on VirtualBox VMs that using bridged network.  
-  I added static route on my router (`/ip route> add dst-address=10.42.0.0/16 gateway=192.168.199.103`) but it not works at first.  
-  I can't ping hosts on VXLAN (request timeout) until I add static route and ping VXLAN hosts on hosts that have rancher/k8s hosts on it.  
-  After reached hosts on VXLAN, I deleted static route set on hosts, now I can ping hosts on VXLAN for any host under the router.  
+  I added static route on my router (`/ip route> add dst-address=10.42.0.0/16 gateway=192.168.199.103`) 
+  or hosts in LAN but it not works at first.  
+  
+  I can't access/ping target container on VXLAN (request timeout) 
+  until I add static route and access/ping target container on host that has bridged rancher/k8s VMs on it.  
+  
+  Once reached container on VXLAN from host that has bridged VM on it, 
+  I can access/ping container on VXLAN from any host under the router or host has static route, 
+  even If delete static route set on that host.  
+  
+  If delete rancher/k8s's contains and re-create them, we need to redo these steps to access VXLAN.  
+  
+  I think this is a issue of VXLAN container of rancher.  
 
   Verify ping packet received: `cat /proc/net/snmp | grep Icmp`
 
@@ -165,7 +181,7 @@ chmod +x /usr/local/bin/kubectl
 ```sh
 kubectl get nodes
 kubectl get pods --all-namespaces
-kubectl describe pod <pod_name> --namespace=kube-system
+kubectl describe --namespace=kube-system pod <pod_name>
 ```
 
 ## Destroy
@@ -178,6 +194,7 @@ vagrant destroy -f && rm -rf .vagrant
 
 see: http://rancher.com/using-ansible-with-docker-to-deploy-a-wordpress-service-on-rancher/
 see: https://github.com/galal-hussein/Rancher-Ansible
+see: https://mritd.me/2016/10/29/set-up-kubernetes-cluster-by-kubeadm/
 
 ### Supported kernel and docker versions
 see: http://rancher.com/docs/rancher/v1.6/en/hosts/
