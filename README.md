@@ -35,6 +35,8 @@ Run workloads (services)
 
 ## Build oss-internal repository on gitlab.internal
 
+- import https://github.com/home1-oss/oss-internal-template.git
+> into 'home1-oss/oss-internal' as private or internal project
 
 
 ## Gitlab -> New Project -> git Repo by URL
@@ -61,11 +63,28 @@ Run workloads (services)
 - import https://github.com/home1-oss/oss-jenkins-pipeline.git
 > into 'home1-oss/oss-jenkins-pipeline' as private project
 
-## Run eureka, configserver, todomvc
+## Run eureka, configserver, todomvc, admin, hystrixboard, turbine
+
+- Eureka (docker-compose)
+  Project: oss-eureka
+  Environment: staging
+  Docker registry: home1oss
+  Version: 1.0.7.OSS
+  Preposition deploy: 192.168.199.51
+  All nodes: 192.168.199.51;192.168.199.52;192.168.199.53
+  
+  TODO Add DNS record
+
+- Eureka (k8s)
+  Project: oss-eureka-k8s
+  Environment: staging
+  Version: 1.0.7.OSS
+  
+  `kubectl get services`
+  `kubectl describe services/eureka`
+
 
 ## TODOS
-
-- Put jenkins pipeline repo on github
 
 - Add DNS setup for privoxy container
 - Test download file from fileserver.internal through smart-http-proxy.internal:28119

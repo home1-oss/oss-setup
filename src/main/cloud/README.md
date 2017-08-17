@@ -128,6 +128,13 @@ ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_p
 ./enable_access_vxlan.sh
 ```
 
+  I run VXLAN (rancher/k8s hosts) on VirtualBox VMs that using bridged network.  
+  I added static route on my router (`/ip route> add dst-address=10.42.0.0/16 gateway=192.168.199.103`) but it not works at first.  
+  I can't ping hosts on VXLAN (request timeout) until I add static route and ping VXLAN hosts on hosts that have rancher/k8s hosts on it.  
+  After reached hosts on VXLAN, I deleted static route set on hosts, now I can ping hosts on VXLAN for any host under the router.  
+
+  Verify ping packet received: `cat /proc/net/snmp | grep Icmp`
+
 - Play with dashboard
 
 If dashboard not available

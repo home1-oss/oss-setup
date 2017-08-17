@@ -66,7 +66,6 @@ sudo touch /etc/pam.d/common-session-noninteractive
 append_or_replace "${vagrant_limit_lead}" "${vagrant_limit_tail}" "${TMP}/etc_pam_d_su" "/etc/pam.d/common-session-noninteractive"
 
 if [ -f /etc/os-release ] && grep CentOS /etc/os-release > /dev/null; then yum install redhat-lsb -y; fi
-
 if type -p lsb_release > /dev/null; then
     id="$(lsb_release -is)"
     codename=$(lsb_release -cs)
@@ -79,14 +78,18 @@ if type -p lsb_release > /dev/null; then
         sudo mkdir /var/lib/apt/lists/partial
         #sudo apt-get update -o Acquire::No-Cache=True -o Acquire::BrokenProxe=True
 
+        sudo apt-get install -y ntpdate
+        ntpdate -s time.nist.gov
+
         if [ "${codename}" == "xenial" ]; then
             sudo apt-get update -y || sudo apt-get update -y || echo apt-get update failed
             sudo apt-get install -y python
         fi
     elif [ "${id}" == "CentOS" ]; then
-      sudo yum install net-tools -y
+        #if ! type -p unzip > /dev/null; then sudo yum -y install unzip; fi
+        #if ! type -p ifconfig > /dev/null; then sudo yum -y install net-tools; fi
+        sudo yum install net-tools -y
+        sudo yum install ntpdate -y
     fi
 fi
-
-#if ! type -p ifconfig > /dev/null; then sudo yum -y install net-tools; fi
-#if ! type -p unzip > /dev/null; then sudo yum -y install unzip; fi
+sudo ntpdate -s time.nist.gov
