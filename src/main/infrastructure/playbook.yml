@@ -408,7 +408,7 @@
     file: gitlab/docker-compose.yml
     #pull: yes
   environment:
-    CONFIGSERVER_WEBHOOK_ENDPOINT: http://configserver.internal:8888/monitor
+    CONFIGSERVER_WEBHOOK_ENDPOINT: http://oss-configserver.internal:8888/monitor
     GITLAB_ROOT_PASSWORD: user_pass
     GITLAB_SHELL_SSH_PORT: 20022
     GIT_ADMIN_USERNAME: user

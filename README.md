@@ -43,19 +43,19 @@ Run workloads (services)
 
 - import https://github.com/home1-oss/common-config.git
 > into 'home1-oss/common-config' as internal project
-> set or enable [deploy key](https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub) for configserver access
+> set or enable [deploy key](https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub) for oss-configserver access
 
 - import https://github.com/home1-oss/oss-todomvc-app-config.git
 > into 'home1-oss/oss-todomvc-app-config' as private project
-> set or enable [deploy key](https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub) for configserver access
+> set or enable [deploy key](https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub) for oss-configserver access
 
 - import https://github.com/home1-oss/oss-todomvc-thymeleaf-config.git
 > into 'home1-oss/oss-todomvc-thymeleaf-config' as private project
-> set or enable [deploy key](https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub) for configserver access
+> set or enable [deploy key](https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub) for oss-configserver access
 
 - import https://github.com/home1-oss/oss-todomvc-gateway-config.git
 > into 'home1-oss/oss-todomvc-gateway-config' as private project
-> set or enable [deploy key](https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub) for configserver access
+> set or enable [deploy key](https://raw.githubusercontent.com/home1-oss/oss-configserver/master/src/main/resources/default_deploy_key.pub) for oss-configserver access
 
 - import https://github.com/home1-oss/oss-todomvc.git
 > into 'home1-oss/oss-todomvc' as private project
@@ -63,9 +63,9 @@ Run workloads (services)
 - import https://github.com/home1-oss/oss-jenkins-pipeline.git
 > into 'home1-oss/oss-jenkins-pipeline' as private project
 
-## Run eureka, configserver, todomvc, admin, hystrixboard, turbine
+## Run oss-eureka, oss-configserver, oss-todomvc, oss-admin, oss-hystrixboard, oss-turbine
 
-- Eureka (docker-compose)
+- oss-eureka (docker-compose)
   Project: oss-eureka
   Environment: staging
   Docker registry: home1oss
@@ -75,26 +75,26 @@ Run workloads (services)
   
   TODO Add DNS record
 
-- Eureka (k8s)
+- oss-eureka (k8s)
   Project: oss-eureka-k8s
   Environment: staging
   Version: 1.0.7.OSS
 
 ```sh
 kubectl get services
-kubectl describe services/eureka
+kubectl describe services/oss-eureka
 ```
 
   Find service's address
 ```sh
-pod=$(kubectl get pods | grep eureka- | awk '{print $1}')
-kubectl exec -it ${pod} nslookup eureka.default.svc.cluster.local 127.0.0.1:10053
+pod=$(kubectl get pods | grep oss-eureka- | awk '{print $1}')
+kubectl exec -it ${pod} nslookup oss-eureka.default.svc.cluster.local 127.0.0.1:10053
 ```
 
   Find endpoint's address
 ```sh
 pod=$(kubectl get pods --all-namespaces | grep kube-dns | awk '{print $2}')
-kubectl --namespace=kube-system exec -it ${pod} -c kubedns -- nslookup eureka.default.svc.cluster.local 127.0.0.1:10053
+kubectl --namespace=kube-system exec -it ${pod} -c kubedns -- nslookup oss-eureka.default.svc.cluster.local 127.0.0.1:10053
 #kubectl --namespace kube-system describe pods/${pod} | grep IP
 ```
   
@@ -104,9 +104,9 @@ kubectl describe --namespace=kube-system svc kube-dns
 ```
 
   Cluster DNS is 10.43.0.10
-  Run `nslookup eureka.default.svc.cluster.local 10.43.0.10` on pod's container
+  Run `nslookup oss-eureka.default.svc.cluster.local 10.43.0.10` on pod's container
 
-
+- oss-configserver (k8s)
 
 ## TODOS
 
