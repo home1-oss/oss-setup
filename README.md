@@ -69,11 +69,34 @@ Run workloads (services)
   Project: oss-eureka
   Environment: staging
   Docker registry: home1oss
-  Version: 1.0.7.OSS
+  Version: 1.0.8.OSS
   Preposition deploy: 192.168.199.51
   All nodes: 192.168.199.51;192.168.199.52;192.168.199.53
   
-  TODO Add DNS record
+  TODO Auto add DNS record
+```sh
+docker exec -it bind.internal recorddel internal oss-eureka-peer1
+docker exec -it bind.internal recorddel internal oss-eureka-peer2
+docker exec -it bind.internal recorddel internal oss-eureka-peer3
+docker exec -it bind.internal recordadd internal oss-eureka-peer1 A 192.168.199.51
+docker exec -it bind.internal recordadd internal oss-eureka-peer2 A 192.168.199.52
+docker exec -it bind.internal recordadd internal oss-eureka-peer3 A 192.168.199.53
+```
+
+- oss-configserver (docker-compose)
+  Project: oss-configserver
+  Environment: staging
+  Docker registry: home1oss
+  Version: 1.0.8.OSS
+  Preposition deploy: 192.168.199.52
+  All nodes: 192.168.199.52
+
+  TODO Auto add DNS record
+```sh
+docker exec -it bind.internal recorddel internal oss-configserver
+docker exec -it bind.internal recordadd internal oss-configserver A 192.168.199.52
+```
+
 
 - oss-eureka (k8s)
   Project: oss-eureka-k8s
@@ -97,7 +120,7 @@ pod=$(kubectl get pods --all-namespaces | grep kube-dns | awk '{print $2}')
 kubectl --namespace=kube-system exec -it ${pod} -c kubedns -- nslookup oss-eureka.default.svc.cluster.local 127.0.0.1:10053
 #kubectl --namespace kube-system describe pods/${pod} | grep IP
 ```
-  
+
   Find kube-dns service
 ```sh
 kubectl describe --namespace=kube-system svc kube-dns
@@ -107,6 +130,11 @@ kubectl describe --namespace=kube-system svc kube-dns
   Run `nslookup oss-eureka.default.svc.cluster.local 10.43.0.10` on pod's container
 
 - oss-configserver (k8s)
+
+```sh
+pod=$(kubectl get pods | grep oss-configserver- | awk '{print $1}')
+kubectl exec -it ${pod} bash
+```
 
 ## TODOS
 
