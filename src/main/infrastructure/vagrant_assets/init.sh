@@ -78,11 +78,9 @@ if type -p lsb_release > /dev/null; then
         sudo mkdir /var/lib/apt/lists/partial
         #sudo apt-get update -o Acquire::No-Cache=True -o Acquire::BrokenProxe=True
 
+        sudo apt-get update -y || sudo apt-get update -y || echo apt-get update failed
         sudo apt-get install -y ntpdate
-        ntpdate -s time.nist.gov
-
         if [ "${codename}" == "xenial" ]; then
-            sudo apt-get update -y || sudo apt-get update -y || echo apt-get update failed
             sudo apt-get install -y python
         fi
     elif [ "${id}" == "CentOS" ]; then
