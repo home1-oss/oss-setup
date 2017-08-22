@@ -3,7 +3,6 @@
 
 INIT_SH_PATH = File.join(File.dirname(__FILE__), "vagrant_assets/init.sh")
 SYSCTL_CONF_PATH = File.join(File.dirname(__FILE__), "vagrant_assets/sysctl.conf")
-VAGRANT_PUB_PATH = File.join(File.dirname(__FILE__), "vagrant_assets/vagrant.pub")
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
@@ -12,19 +11,14 @@ VAGRANT_PUB_PATH = File.join(File.dirname(__FILE__), "vagrant_assets/vagrant.pub
 #
 Vagrant.configure(2) do |config|
 
-  #config.ssh.forward_agent = true
   config.ssh.insert_key = false
-  #config.ssh.password = 'vagrant'
-  config.ssh.private_key_path = ["#{ENV['HOME']}/.vagrant.d/insecure_private_key","#{ENV['HOME']}/.ssh/id_rsa"]
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'" # avoids 'stdin: is not a tty' error.
-  #config.ssh.username = 'vagrant'
 
   config.vm.box_check_update = false
 
   config.vm.define "rancherserver" do |rancherserver|
+    rancherserver.vm.box= "chshawkn/ubuntu1404"
     rancherserver.vm.hostname = 'rancherserver'
-    rancherserver.vm.box= "ubuntu/trusty64"
-    rancherserver.vm.box_url = "ubuntu/trusty64"
 
     rancherserver.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: "true"
     rancherserver.vm.network "forwarded_port", guest: 22, host: 60100, auto_correct: true
@@ -32,29 +26,22 @@ Vagrant.configure(2) do |config|
     rancherserver.vm.network "public_network", ip: "192.168.199.100", netmask: "255.255.255.0", nic_type: "82545EM"
 
     rancherserver.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--cpus", 2]
       v.customize ["modifyvm", :id, "--memory", 2048]
       v.customize ["modifyvm", :id, "--name", "rancherserver"]
-      #v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-      #v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
     end
   end
 
-  N = 3
+  N = 4
   (1..N).each do |machine_id|
     config.vm.define "rancherhost#{machine_id}" do |machine|
-      machine.vm.box= "ubuntu/trusty64"
-      machine.vm.box_url = "ubuntu/trusty64"
+      machine.vm.box= "chshawkn/ubuntu1404"
 
       if machine_id == 1
-        machine.vm.box= "ubuntu/xenial64"
-        machine.vm.box_url = "ubuntu/xenial64"
+        machine.vm.box= "chshawkn/ubuntu1604"
       end
       if machine_id == 2
-        machine.vm.box= "centos/7"
-        machine.vm.box_url = "centos/7"
-        # centos/7 "rsync" could not be found on your PATH. Make sure that rsync ...
-        #machine.vm.synced_folder ".", "/vagrant", type: "virtualbox"
-        machine.vm.synced_folder ".", "/vagrant", disabled: true
+        machine.vm.box= "chshawkn/centos7"
       end
 
       machine.vm.hostname = "rancherhost#{machine_id}"
@@ -65,39 +52,13 @@ Vagrant.configure(2) do |config|
 
       machine.vm.provider :virtualbox do |v|
         v.customize ["modifyvm", :id, "--cpus", 2]
-        #v.customize ["modifyvm", :id, "--memory", 4096]
-        v.customize ["modifyvm", :id, "--memory", 6144]
+        v.customize ["modifyvm", :id, "--memory", 5120]
         v.customize ["modifyvm", :id, "--name", "rancherhost#{machine_id}"]
-        #v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-        #v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
       end
-
-      # Only execute once the Ansible provisioner,
-      # when all the machines are up and ready.
-      #if machine_id == N
-      #  machine.vm.provision :ansible do |ansible|
-      #    # Disable default limit to connect to all the machines
-      #    ansible.limit = "all"
-      #    ansible.playbook = "playbook.yml"
-      #  end
-      #end
     end
   end
 
   config.vm.provision "shell", :privileged => true, inline: "echo whoami $(whoami) pwd $(pwd)"
-  if File.exist?(VAGRANT_PUB_PATH)
-    config.vm.provision :file, :source => "#{VAGRANT_PUB_PATH}", :destination => "/tmp/authorized_keys"
-  else
-    config.vm.provision "shell", :privileged => true, inline: "sudo curl -o /tmp/authorized_keys https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub"
-  end
-  config.vm.provision "shell", :privileged => true, inline: <<-SCRIPT
-    mkdir -p /root/.ssh
-    cp -f /tmp/authorized_keys /root/.ssh/authorized_keys
-    printf "write %s into /root/.ssh/authorized_keys\n" "#{ENV['HOME']}/.ssh/id_rsa.pub"
-    printf "%s\n" "#{File.read("#{ENV['HOME']}/.ssh/id_rsa.pub")}" >> /root/.ssh/authorized_keys
-    chmod 600 /root/.ssh/authorized_keys
-    chown -R root:root /root/.ssh
-  SCRIPT
 
   if File.exist?(SYSCTL_CONF_PATH)
     config.vm.provision :file, :source => "#{SYSCTL_CONF_PATH}", :destination => "/tmp/sysctl.conf"
@@ -110,10 +71,11 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.provision "shell", run: "always", inline: <<-SCRIPT
+    eval `route -n | awk '{ if ($8 =="eth0" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
+    eval `route -n | awk '{ if ($8 =="enp0s3" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
+    #eval `route -n | awk '{ if ($8 =="eth1" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
+
     route add default gw 192.168.199.1
     #route -A inet6 add default gw fc00::1 eth2
-    eval `route -n | awk '{ if ($8 =="eth0" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
-    #eval `route -n | awk '{ if ($8 =="eth1" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
-    eval `route -n | awk '{ if ($8 =="enp0s3" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
   SCRIPT
 end

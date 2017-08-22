@@ -21,7 +21,7 @@ vagrant up
 
 ```sh
 ansible-galaxy install -v --force -r requirements.yml
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+ansible-playbook -v -u vagrant -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
     --tags "docker,docker-config" \
     -e "fileserver=http://fileserver.internal http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119"
 ```
@@ -30,7 +30,7 @@ ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_p
 
 ```sh
 ansible-galaxy install -v --force -r requirements.yml
-ansible-playbook -v -i hosts -u root --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+ansible-playbook -v -i hosts -u vagrant --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
     --tags "rancher_server,rancher_reg" \
     -e "infrastructure=internal"
 ```
@@ -50,7 +50,7 @@ see: [Private Registry with Kubernetes in Rancher](http://rancher.com/docs/ranch
 
 ```sh
 ansible-galaxy install -v --force -r requirements.yml
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+ansible-playbook -v -u vagrant -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
     --tags "rancher_server" \
     -e "infrastructure=internal"
 
@@ -123,7 +123,7 @@ CHANGING THE DEFAULT REGISTRY
 
 - Run k8s cluster hosts
 ```
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+ansible-playbook -v -u vagrant -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
     --tags "rancher_reg" \
     -e "rancher_project_name=env-k8s-vxlan-oss-internal"
 ```
@@ -210,7 +210,7 @@ curl ${RANCHER_URL}/v1/projects | prettyjson
 ## Re-config docker
 
 ```sh
-ansible-playbook -v -i hosts -u root --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+ansible-playbook -v -i hosts -u vagrant --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
     --tags "docker-config" \
     -e "http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119"
 ```
@@ -225,7 +225,7 @@ You can use validate_certs=False if you do not need to confirm the servers ident
 
 Test
 ```sh
-ansible rancherhost3 -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key \
+ansible rancherhost3 -u vagrant -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key \
     -m get_url -a 'url=https://download.docker.com/linux/ubuntu/gpg dest=/tmp'
 ```
 
