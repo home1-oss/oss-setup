@@ -80,9 +80,9 @@ if type -p lsb_release > /dev/null; then
 
         sudo apt-get update -y || sudo apt-get update -y || echo apt-get update failed
         sudo apt-get install -y ntpdate
-        if [ "${codename}" == "xenial" ]; then
-            sudo apt-get install -y python
-        fi
+        #if [ "${codename}" == "xenial" ]; then
+        #    sudo apt-get install -y python
+        #fi
     elif [ "${id}" == "CentOS" ]; then
         #if ! type -p unzip > /dev/null; then sudo yum -y install unzip; fi
         #if ! type -p ifconfig > /dev/null; then sudo yum -y install net-tools; fi
