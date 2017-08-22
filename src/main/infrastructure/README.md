@@ -7,12 +7,12 @@ home1-oss infrastructure cluster.
 vagrant up
 ansible-galaxy install -v --force -r requirements.yml
 # start all
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
-    -e "create_oss_network=True branch=develop infrastructure=internal forwarders=<e.g. 10.0.2.3> proxy=<e.g. socks5://127.0.0.1:1080>"
+ansible-playbook -v -u vagrant -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+    -e "create_oss_network=True branch=develop infrastructure=internal forwarders=<e.g. 192.168.199.1> proxy=<e.g. socks5://127.0.0.1:1080>"
 # or start specific services
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+ansible-playbook -v -u vagrant -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
     --tags "dns,privoxy,ldap,nexus3,mysql,postgresql,cloudbus,docker-config,sonarqube,gitlab,jenkins" \
-    -e "create_oss_network=True branch=develop infrastructure=internal forwarders=<e.g. 10.0.2.3> proxy=<e.g. socks5://127.0.0.1:1080>"
+    -e "create_oss_network=True branch=develop infrastructure=internal forwarders=<e.g. 192.168.199.1> proxy=<e.g. socks5://127.0.0.1:1080>"
 ```
 
 ## Check proxy
@@ -27,7 +27,7 @@ sudo killall -HUP mDNSResponder
 
 - Re-config proxy only
 ```sh
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+ansible-playbook -v -u vagrant -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
     --tags "privoxy" \
     -e "branch=develop infrastructure=internal proxy=<e.g. socks5://127.0.0.1:1080>"
 ```

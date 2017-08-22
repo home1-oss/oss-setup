@@ -14,3 +14,6 @@
     project_src: "{{ git_dest }}"
     pull: yes #"{{ pull | default(True) }}"
     remove_volumes: "{{ remove_volumes | default(False) }}"
+  become: yes
+  become_user: root
+  become_method: sudo

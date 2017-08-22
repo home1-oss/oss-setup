@@ -16,6 +16,7 @@
   roles:
     - { role: home1-oss.oss-docker-config, tags: ["always"] }
 
+
 - name: clean up
   hosts: infrastructure
   tasks:
@@ -25,9 +26,11 @@
     #- "docker images -f 'dangling=true' -q | xargs docker rmi"
     - "docker volume ls -qf dangling=true | xargs docker volume rm"
     ignore_errors: true
-    sudo: yes
     tags:
     - always
+  become: yes
+  become_user: root
+  become_method: sudo
 
 - name: dns
   hosts: "net"
