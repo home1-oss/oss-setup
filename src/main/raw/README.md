@@ -1,5 +1,5 @@
 # Raw cluster (services on raw machine)
-home1-oss infrastructure on raw machines cluster.
+home1-oss services on raw machines cluster.
 
 ## Run
 
@@ -8,7 +8,7 @@ vagrant up
 
 ansible-galaxy install -v --force -r requirements.yml
 
-ansible-playbook -v -u root -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+ansible-playbook -v -u vagrant -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
     -e "create_oss_network=True"
 ```
 

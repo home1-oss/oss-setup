@@ -3,36 +3,21 @@
 
 INIT_SH_PATH = File.join(File.dirname(__FILE__), "vagrant_assets/init.sh")
 SYSCTL_CONF_PATH = File.join(File.dirname(__FILE__), "vagrant_assets/sysctl.conf")
-VAGRANT_PUB_PATH = File.join(File.dirname(__FILE__), "vagrant_assets/vagrant.pub")
 
 Vagrant.configure(2) do |config|
   config.ssh.insert_key = false
-  config.ssh.private_key_path = ["#{ENV['HOME']}/.vagrant.d/insecure_private_key","#{ENV['HOME']}/.ssh/id_rsa"]
+  #config.ssh.private_key_path = ["#{ENV['HOME']}/.vagrant.d/insecure_private_key","#{ENV['HOME']}/.ssh/id_rsa"]
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'" # avoids 'stdin: is not a tty' error.
 
   config.vm.box_check_update = false
-  config.vm.box= "ubuntu/xenial64"
-  config.vm.box_url = "ubuntu/xenial64"
+  config.vm.box= "chshawkn/ubuntu1604"
 
   config.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: "true"
-
-  #config.vm.provider :virtualbox do |v|
-  #  v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-  #  v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
-  #end
-
-  config.vm.provision "shell", inline: <<-SCRIPT
-    curl https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub > /root/.ssh/authorized_keys
-    printf "%s\n" "#{File.read("#{ENV['HOME']}/.ssh/id_rsa.pub")}" >> /root/.ssh/authorized_keys
-    chmod 600 /root/.ssh/authorized_keys
-    chown -R root:root /root/.ssh
-  SCRIPT
 
   N = 3
   (1..N).each do |machine_id|
     config.vm.define "rawhost#{machine_id}" do |machine|
       machine.vm.hostname = "rawhost#{machine_id}"
-      #machine.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: "true"
       machine.vm.network "forwarded_port", guest: 22, host: 60050+machine_id, auto_correct: true
       #machine.vm.network "private_network", ip: "172.22.101.#{50+machine_id}", netmask: "255.255.255.0", nic_type: "82545EM"
       machine.vm.network "public_network", ip: "192.168.199.#{50+machine_id}", netmask: "255.255.255.0", nic_type: "82545EM"
@@ -45,21 +30,6 @@ Vagrant.configure(2) do |config|
     end
   end
 
-  config.vm.provision "shell", :privileged => true, inline: "echo whoami $(whoami) pwd $(pwd)"
-  if File.exist?(VAGRANT_PUB_PATH)
-    config.vm.provision :file, :source => "#{VAGRANT_PUB_PATH}", :destination => "/tmp/authorized_keys"
-  else
-    config.vm.provision "shell", :privileged => true, inline: "sudo curl -o /tmp/authorized_keys https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub"
-  end
-  config.vm.provision "shell", :privileged => true, inline: <<-SCRIPT
-    mkdir -p /root/.ssh
-    cp -f /tmp/authorized_keys /root/.ssh/authorized_keys
-    printf "write %s into /root/.ssh/authorized_keys\n" "#{ENV['HOME']}/.ssh/id_rsa.pub"
-    printf "%s\n" "#{File.read("#{ENV['HOME']}/.ssh/id_rsa.pub")}" >> /root/.ssh/authorized_keys
-    chmod 600 /root/.ssh/authorized_keys
-    chown -R root:root /root/.ssh
-  SCRIPT
-
   if File.exist?(SYSCTL_CONF_PATH)
     config.vm.provision :file, :source => "#{SYSCTL_CONF_PATH}", :destination => "/tmp/sysctl.conf"
     config.vm.provision :shell, :privileged => true, :inline => "if [[ -f /tmp/sysctl.conf ]]; then mv /tmp/sysctl.conf /etc/sysctl.conf; sysctl -p; fi"
@@ -71,10 +41,11 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.provision "shell", run: "always", inline: <<-SCRIPT
+    eval `route -n | awk '{ if ($8 =="eth0" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
+    eval `route -n | awk '{ if ($8 =="enp0s3" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
+    #eval `route -n | awk '{ if ($8 =="eth1" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
+
     route add default gw 192.168.199.1
     #route -A inet6 add default gw fc00::1 eth2
-    eval `route -n | awk '{ if ($8 =="eth0" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
-    #eval `route -n | awk '{ if ($8 =="eth1" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
-    eval `route -n | awk '{ if ($8 =="enp0s3" && $2 != "0.0.0.0") print "route del default gw " $2; }'`
   SCRIPT
 end
