@@ -16,19 +16,19 @@ for host in ${HOSTS[@]}; do
     ssh -i ${KEY} vagrant@${host} '
 sudo docker rm -fv $(sudo docker ps -qa)
 
-rm -rf /var/etcd/
+sudo rm -rf /var/etcd/
 
 for m in $(tac /proc/mounts | awk '"'"'{print $2}'"'"' | grep /var/lib/kubelet); do
-  umount ${m} || true
+  sudo umount ${m} || true
 done
-rm -rf /var/lib/kubelet/
+sudo rm -rf /var/lib/kubelet/
 
 for m in $(tac /proc/mounts | awk '"'"'{print $2}'"'"' | grep /var/lib/rancher); do
-  umount ${m} || true
+  sudo umount ${m} || true
 done
-rm -rf /var/lib/rancher/
+sudo rm -rf /var/lib/rancher/
 
-rm -rf /run/kubernetes/
+sudo rm -rf /run/kubernetes/
 
 sudo docker volume rm $(sudo docker volume ls -q)
 
