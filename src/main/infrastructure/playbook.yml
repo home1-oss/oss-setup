@@ -49,7 +49,7 @@
   - { role: home1-oss.oss-dns-record, tags: ["dns"] }
 
 - name: Setup /etc/resolv.conf
-  hosts: ["repository", "ci"]
+  hosts: ["data", "repository", "ci"]
   vars:
     resolv_conf_nameservers:
     - "{{ hostvars['net']['ansible_ssh_host'] }}"
@@ -120,6 +120,72 @@
     service_ip: "{{ hostvars['net']['ansible_ssh_host'] }}"
   roles:
   - { role: home1-oss.oss-dns-record, tags: ["dns", "ldap"] }
+
+
+- name: mysql
+  hosts: "data"
+  vars:
+    git_repo: https://github.com/home1-oss/docker-mysql.git
+    git_dest: /tmp/docker-mysql
+    file: mysql-5.6/docker-compose.yml
+    #pull: yes
+  environment:
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_USER: user
+    MYSQL_PASSWORD: user_pass
+    DB_NAME: db
+  roles:
+  - { role: docker-compose, tags: ["mysql"] }
+- hosts: "net"
+  vars:
+    service: mysql
+    service_ip: "{{ hostvars['data']['ansible_ssh_host'] }}"
+  roles:
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "mysql"] }
+
+- name: postgresql
+  hosts: "data"
+  vars:
+    git_repo: https://github.com/home1-oss/docker-postgresql.git
+    git_dest: /tmp/docker-postgresql
+    file: docker-compose.yml
+    #pull: yes
+  environment:
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    POSTGRES_USER: user
+    POSTGRES_PASSWORD: user_pass
+    SONARQUBE_JDBC_USERNAME: sonar
+    SONARQUBE_JDBC_PASSWORD: sonar
+  roles:
+  - { role: docker-compose, tags: ["postgresql"] }
+- hosts: "net"
+  vars:
+    service: postgresql
+    service_ip: "{{ hostvars['data']['ansible_ssh_host'] }}"
+  roles:
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "postgresql"] }
+
+- name: cloudbus
+  hosts: "data"
+  vars:
+    git_repo: https://github.com/home1-oss/docker-cloudbus.git
+    git_dest: /tmp/docker-cloudbus
+    #file: rabbitmq-management/docker-compose.yml
+    file: docker-compose.yml
+    #pull: yes
+  environment:
+    INFRASTRUCTURE: "{{ infrastructure }}"
+    SPRING_RABBITMQ_USERNAME: user
+    SPRING_RABBITMQ_PASSWORD: user_pass
+  roles:
+  - { role: docker-compose, tags: ["cloudbus"] }
+- hosts: "net"
+  vars:
+    service: cloudbus
+    service_ip: "{{ hostvars['data']['ansible_ssh_host'] }}"
+  roles:
+  - { role: home1-oss.oss-dns-record, tags: ["dns", "cloudbus"] }
 
 
 - name: gcr.io
@@ -281,71 +347,6 @@
 #    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
 #  roles:
 #  - { role: home1-oss.oss-dns-record, tags: ["dns", "nexus3"] }
-
-- name: mysql
-  hosts: "repository"
-  vars:
-    git_repo: https://github.com/home1-oss/docker-mysql.git
-    git_dest: /tmp/docker-mysql
-    file: mysql-5.6/docker-compose.yml
-    #pull: yes
-  environment:
-    INFRASTRUCTURE: "{{ infrastructure }}"
-    MYSQL_ROOT_PASSWORD: root
-    MYSQL_USER: user
-    MYSQL_PASSWORD: user_pass
-    DB_NAME: db
-  roles:
-  - { role: docker-compose, tags: ["mysql"] }
-- hosts: "net"
-  vars:
-    service: mysql
-    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
-  roles:
-  - { role: home1-oss.oss-dns-record, tags: ["dns", "mysql"] }
-
-- name: postgresql
-  hosts: "repository"
-  vars:
-    git_repo: https://github.com/home1-oss/docker-postgresql.git
-    git_dest: /tmp/docker-postgresql
-    file: docker-compose.yml
-    #pull: yes
-  environment:
-    INFRASTRUCTURE: "{{ infrastructure }}"
-    POSTGRES_USER: user
-    POSTGRES_PASSWORD: user_pass
-    SONARQUBE_JDBC_USERNAME: sonar
-    SONARQUBE_JDBC_PASSWORD: sonar
-  roles:
-  - { role: docker-compose, tags: ["postgresql"] }
-- hosts: "net"
-  vars:
-    service: postgresql
-    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
-  roles:
-  - { role: home1-oss.oss-dns-record, tags: ["dns", "postgresql"] }
-
-- name: cloudbus
-  hosts: "repository"
-  vars:
-    git_repo: https://github.com/home1-oss/docker-cloudbus.git
-    git_dest: /tmp/docker-cloudbus
-    #file: rabbitmq-management/docker-compose.yml
-    file: docker-compose.yml
-    #pull: yes
-  environment:
-    INFRASTRUCTURE: "{{ infrastructure }}"
-    SPRING_RABBITMQ_USERNAME: user
-    SPRING_RABBITMQ_PASSWORD: user_pass
-  roles:
-  - { role: docker-compose, tags: ["cloudbus"] }
-- hosts: "net"
-  vars:
-    service: cloudbus
-    service_ip: "{{ hostvars['repository']['ansible_ssh_host'] }}"
-  roles:
-  - { role: home1-oss.oss-dns-record, tags: ["dns", "cloudbus"] }
 
 
 - name: Docker config
