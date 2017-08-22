@@ -24,7 +24,7 @@ function cache_images() {
     ssh -i ${KEY} vagrant@${host} '/tmp/pull_rancher_images.sh "origin"'
 
     # untag mirror.docker.internal/*
-    ssh -i ${KEY} vagrant@${host} "docker images | grep mirror.docker.internal | awk '{print \$1\":\"\$2}' | xargs docker rmi"
+    ssh -i ${KEY} vagrant@${host} "sudo docker images | grep mirror.docker.internal | awk '{print \$1\":\"\$2}' | xargs sudo docker rmi"
 }
 
 if [ ! -z "$1" ]; then

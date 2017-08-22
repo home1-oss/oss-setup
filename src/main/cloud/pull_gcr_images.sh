@@ -102,7 +102,7 @@ for registry in "${REGISTRIES[@]}"; do
                 full_image="${image}:${tag}"
             fi
             echo pull image ${full_image}
-            docker pull ${full_image}
+            sudo docker pull ${full_image}
         done
     done
 done

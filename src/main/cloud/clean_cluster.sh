@@ -14,7 +14,7 @@ for host in ${HOSTS[@]}; do
     echo "host: ${host}"
 
     ssh -i ${KEY} vagrant@${host} '
-docker rm -fv $(docker ps -qa)
+sudo docker rm -fv $(sudo docker ps -qa)
 
 rm -rf /var/etcd/
 
@@ -30,12 +30,12 @@ rm -rf /var/lib/rancher/
 
 rm -rf /run/kubernetes/
 
-docker volume rm $(docker volume ls -q)
+sudo docker volume rm $(sudo docker volume ls -q)
 
-docker ps -a
-docker volume ls
+sudo docker ps -a
+sudo docker volume ls
 
-docker images | grep mirror.docker.internal | awk '"'"'{print $1":"$2}'"'"' | xargs docker rmi
+sudo docker images | grep mirror.docker.internal | awk '"'"'{print $1":"$2}'"'"' | xargs sudo docker rmi
 '
 
 done

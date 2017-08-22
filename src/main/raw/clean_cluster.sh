@@ -12,13 +12,13 @@ for host in ${HOSTS[@]}; do
     echo "host: ${host}"
 
     ssh -i ${KEY} root@${host} '
-docker rm -fv $(docker ps -qa)
-docker volume rm $(docker volume ls -q)
-docker images -q | xargs docker rmi
+sudo docker rm -fv $(sudo docker ps -qa)
+sudo docker volume rm $(sudo docker volume ls -q)
+sudo docker images -q | xargs sudo docker rmi
 
-docker ps -a
-docker volume ls
-docker images
+sudo docker ps -a
+sudo docker volume ls
+sudo docker images
 '
 
 done
