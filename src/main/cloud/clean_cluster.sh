@@ -6,13 +6,14 @@ HOSTS+=('192.168.199.100')
 HOSTS+=('192.168.199.101')
 HOSTS+=('192.168.199.102')
 HOSTS+=('192.168.199.103')
+HOSTS+=('192.168.199.104')
 
 KEY="~/.vagrant.d/insecure_private_key"
 
 for host in ${HOSTS[@]}; do
     echo "host: ${host}"
 
-    ssh -i ${KEY} root@${host} '
+    ssh -i ${KEY} vagrant@${host} '
 docker rm -fv $(docker ps -qa)
 
 rm -rf /var/etcd/

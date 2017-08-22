@@ -21,9 +21,21 @@ vagrant up
 
 ```sh
 ansible-galaxy install -v --force -r requirements.yml
+../infrastructure/cache_files.sh
+```
+
+Using proxy
+```sh
 ansible-playbook -v -u vagrant -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
     --tags "docker,docker-config" \
-    -e "fileserver=http://fileserver.internal http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119"
+    -e "infrastructure=internal fileserver=http://fileserver.internal http_proxy=http://smart-http-proxy.internal:28119 https_proxy=http://smart-http-proxy.internal:28119 forwarders=<e.g. 192.168.199.1>"
+```
+
+Or direct connection
+```sh
+ansible-playbook -v -u vagrant -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
+    --tags "docker,docker-config" \
+    -e "infrastructure=internal fileserver=http://fileserver.internal forwarders=<e.g. 192.168.199.1>"
 ```
 
 ## Run rancher

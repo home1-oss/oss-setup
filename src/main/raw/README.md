@@ -9,7 +9,7 @@ vagrant up
 ansible-galaxy install -v --force -r requirements.yml
 
 ansible-playbook -v -u vagrant -i hosts --private-key=${HOME}/.vagrant.d/insecure_private_key playbook.yml \
-    -e "create_oss_network=True"
+    -e "create_oss_network=True infrastructure=internal forwarders=<e.g. 192.168.199.1>"
 ```
 
 ## Destroy
