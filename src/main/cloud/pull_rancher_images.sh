@@ -38,6 +38,7 @@ RANCHER_IMAGES+=('_/rancher/scheduler:v0.8.2')
 
 # rancher/server:v1.6.7 rancher/k8s:v1.7.2-rancher7
 # see: https://forums.rancher.com/t/rancher-release-v1-6-7
+RANCHER_IMAGES+=('_/rancher/etc-host-updater:v0.0.3')
 RANCHER_IMAGES+=('_/rancher/etcd:v2.3.7-13')
 RANCHER_IMAGES+=('_/rancher/lb-service-rancher:v0.7.8')
 RANCHER_IMAGES+=('_/rancher/metadata:v0.9.3')
