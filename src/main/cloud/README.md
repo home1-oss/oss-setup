@@ -219,6 +219,10 @@ http://rancher.com/docs/rancher/v1.6/en/rancher-services/networking/#mtu
 
 curl ${RANCHER_URL}/v1/projects | prettyjson
 
+## Disaster recovery
+
+see: https://github.com/rancher/rancher/wiki/Kubernetes-Management#disaster-recovery
+
 ## Re-config docker
 
 ```sh
